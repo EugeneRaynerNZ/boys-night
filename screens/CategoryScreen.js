@@ -1,26 +1,30 @@
-import { Text, View, StyleSheet, Image } from 'react-native'
-import React, { Component } from 'react'
+import { Text, View, StyleSheet, Image, TouchableOpacity } from 'react-native'
+import React from 'react'
 import GolfIcon from '../assets/golf.png'
 import PoolIcon from '../assets/pool.png'
 
-export default class CategoryScreen extends Component {
-  render() {
-    return (
-      <View style={[styles.bodyContainer]}>
-        {/* if we click Golf, we should go to "add players screen" */}
-        <View style={styles.category}>
+export default function CategoryScreen({ navigation }) {
+  return (
+    <View style={[styles.bodyContainer]}>
+      {/* if we click Golf, we should go to "add players screen" */}
+      <View style={styles.category}>
+        <TouchableOpacity onPress={() => navigation.navigate('AddPlayers')}>
           <Image source={GolfIcon} style={styles.categoryImage} />
           <Text style={styles.categoryText}>Golf</Text>
-        </View>
-        {/* if we click Pool, we should go to "add players screen" */}
-        <View style={styles.category}>
+        </TouchableOpacity>
+      </View>
+      {/* if we click Pool, we should go to "add players screen" */}
+      <View style={styles.category}>
+        <TouchableOpacity onPress={() => navigation.navigate('AddPlayers')}>
           <Image source={PoolIcon} style={styles.categoryImage} />
           <Text style={styles.categoryText}>Pool</Text>
-        </View>
+        </TouchableOpacity>
       </View>
-    )
-  }
+    </View>
+  )
 }
+
+
 
 const styles = StyleSheet.create({
   bodyContainer: {
