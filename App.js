@@ -11,9 +11,9 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Category" component={Category} />
-        <Stack.Screen name="AddPlayers" component={AddPlayers} />
+        <Stack.Screen name="Home" component={HomeScreen} options={{title: 'Welcome to Boys Night'}} />
+        <Stack.Screen name="Category" component={Category} options={{title:'Game Selection'}} />
+        <Stack.Screen name="AddPlayers" component={AddPlayers} options={{title:'Add Players'}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

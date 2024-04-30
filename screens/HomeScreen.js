@@ -1,42 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, TextInput, Button, FlatList, Text, Image } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React from 'react';
+import { View, StyleSheet, Button, Image } from 'react-native';
 import LoginLogo from '../assets/login-logo2.png'
 
 const Home = ({navigation}) => {
-  const [name, setName] = useState('');
-  const [names, setNames] = useState([]);
-
-  useEffect(() => {
-    // Retrieve names from AsyncStorage when component mounts
-    retrieveData();
-  }, []);
-
-  const saveData = async () => {
-    try {
-      // Add new name to the list
-      const updatedNames = [...names, name];
-      setNames(updatedNames);
-      // Save the updated list to AsyncStorage
-      await AsyncStorage.setItem('names', JSON.stringify(updatedNames));
-    } catch (error) {
-      console.error('Error saving data: ', error);
-    }
-  };
-
-  const retrieveData = async () => {
-    try {
-      // Retrieve names from AsyncStorage
-      const storedNames = await AsyncStorage.getItem('names');
-      if (storedNames !== null) {
-        // Parse retrieved data and set it in state
-        setNames(JSON.parse(storedNames));
-      }
-    } catch (error) {
-      console.error('Error retrieving data: ', error);
-    }
-  };
-
   return (
     <View style={styles.bodyContainer}>
 

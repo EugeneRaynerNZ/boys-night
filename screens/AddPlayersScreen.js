@@ -1,11 +1,15 @@
 import { View, StyleSheet, TextInput, Button, FlatList, Text, Image } from 'react-native'
-import React, { Component } from 'react'
+import React, { Component, useEffect, useState } from 'react'
+import { useRoute } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default class CategoryScreen extends Component {
-  render() {
+export default function AddPlayersScreen() {
 
-    const [name, setName] = useState('');
-    const [names, setNames] = useState([]);
+    const route = useRoute(); // Get the route object from the navigation prop
+    const { category } = route.params;  // Get the category parameter from the route object
+
+    const [name, setName] = useState(''); // State variable to store the name entered by the user
+    const [names, setNames] = useState([]); // State variable to store the list of names
 
     useEffect(() => {
         // Retrieve names from AsyncStorage when component mounts
@@ -37,8 +41,11 @@ export default class CategoryScreen extends Component {
         }
     };
 
+
     return (
       <View style={[styles.bodyContainer]}>
+
+        <Text style={styles.categoryText}>Add players for the {category}:</Text>
         
         {/* https://www.figma.com/proto/T9Rfeh6cCidjQpFoAActWy/Freejoas?page-id=3%3A3&type=design&node-id=701-345&viewport=-31182%2C-21929%2C1&t=i1bx1vF7nWUmqwA9-1&scaling=min-zoom&starting-point-node-id=302%3A2&mode=design */}
         
@@ -60,7 +67,6 @@ export default class CategoryScreen extends Component {
       </View>
     )
   }
-}
 
 const styles = StyleSheet.create({
   bodyContainer: {

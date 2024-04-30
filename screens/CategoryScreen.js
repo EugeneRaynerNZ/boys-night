@@ -4,18 +4,24 @@ import GolfIcon from '../assets/golf.png'
 import PoolIcon from '../assets/pool.png'
 
 export default function CategoryScreen({ navigation }) {
+
+  const handleGameSelection = (category) => {
+    // navigate to the AddPlayers screen and pass the category as a parameter
+    navigation.navigate('AddPlayers', { category });
+  }
+
   return (
     <View style={[styles.bodyContainer]}>
       {/* if we click Golf, we should go to "add players screen" */}
       <View style={styles.category}>
-        <TouchableOpacity onPress={() => navigation.navigate('AddPlayers')}>
+        <TouchableOpacity onPress={() => handleGameSelection('Golf')}>
           <Image source={GolfIcon} style={styles.categoryImage} />
           <Text style={styles.categoryText}>Golf</Text>
         </TouchableOpacity>
       </View>
       {/* if we click Pool, we should go to "add players screen" */}
       <View style={styles.category}>
-        <TouchableOpacity onPress={() => navigation.navigate('AddPlayers')}>
+        <TouchableOpacity onPress={() => handleGameSelection('Pool')}>
           <Image source={PoolIcon} style={styles.categoryImage} />
           <Text style={styles.categoryText}>Pool</Text>
         </TouchableOpacity>
