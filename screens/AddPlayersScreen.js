@@ -2,6 +2,9 @@ import { View, StyleSheet, TextInput, Button, FlatList, Text, Image } from 'reac
 import React, { Component, useEffect, useState } from 'react'
 import { useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import HeaderLogo from '../components/HeaderLogo'
+import PlayerIcon from '../assets/user.png'
+import TrashIcon from '../assets/trash.png'
 
 export default function AddPlayersScreen() {
 
@@ -43,28 +46,46 @@ export default function AddPlayersScreen() {
 
 
     return (
-      <View style={[styles.bodyContainer]}>
+    <View style={[styles.bodyContainer]}>
 
-        <Text style={styles.categoryText}>Add players for the {category}:</Text>
-        
-        {/* https://www.figma.com/proto/T9Rfeh6cCidjQpFoAActWy/Freejoas?page-id=3%3A3&type=design&node-id=701-345&viewport=-31182%2C-21929%2C1&t=i1bx1vF7nWUmqwA9-1&scaling=min-zoom&starting-point-node-id=302%3A2&mode=design */}
-        
-        {/* We want to be able to add and remove players from a list. The below code I have not tested */}
+      <HeaderLogo />
 
-        <Button title="Add Name" onPress={saveData} />
-      
-        <TextInput
+      <View style={styles.container}>
+        <View style={styles.listContainer}>
+          <FlatList 
+            data={names}
+            renderItem={
+              ({ item }) => 
+              <View style={styles.playerContainer}>
+                <View style={styles.player}>
+                  <Image source={PlayerIcon} style={styles.playerIcon} />
+                  <Text style={styles.playerText}>{item}</Text>
+                </View>
+                {/* This button needs an onclick which removes the player from the list of players */}
+                <Image source={TrashIcon} style={styles.trashIcon} />
+              </View>
+            }
+            keyExtractor={(item, index) => index.toString()} />
+        </View>
+
+        {/* When we click this button, the text input should appear and be focussed so that the user can already enter in the new name which will go into the input. The user can then click "add player now" */}
+        <View style={styles.addAnotherPlayer}>
+          <Button title="Add another player" />
+
+          <TextInput
             placeholder="Enter a name"
             value={name}
-            onChangeText={(text) => setName(text)}
-        />
+            onChangeText={(text) => setName(text)} />
 
-        <FlatList 
-            data={names}
-            renderItem={({ item }) => <Text style={styles.red}>{item}</Text>}
-            keyExtractor={(item, index) => index.toString()}
-        />
+          <Button title="Add Player now" onPress={saveData} />
+        </View>
+
+
       </View>
+
+      {/* this button should navigate to the "GameScreen" */}
+      <Button title="Start the game" />
+    </View>
     )
   }
 
@@ -75,27 +96,46 @@ const styles = StyleSheet.create({
     display: "flex",
     padding: 20,
     flexWrap: "wrap",
-    flexDirection: "row",
+    flexDirection: "column",
     gap: 16
   },
-  category: {
-    flexGrow: 1,
-    flexShrink: 0,
-    flexBasis: 100,
-    backgroundColor: '#555555',
+  container: {
     display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    alignSelf: 'flex-start',
-    padding: 32,
-    rowGap: 16
+    flexDirection: "column",
+    width: "100%",
   },
-  categoryImage: {
-    width: 40,
-    height: 40
+  listContainer: {
+    display: "flex",
+    // flexGrow: 1,
+    width: "100%",
   },
-  categoryText: {
-    fontSize: 24,
+  playerContainer: {
+    display: "flex",
+    flexDirection: "row",
+    columnGap: 8,
+    backgroundColor: "#555555",
+    padding: 16,
+    justifyContent: "space-between",
+    marginTop: 16
+  },
+  player: {
+    display: "flex",
+    flexDirection: "row",
+    flexGrow: 1,
+    columnGap: 16
+  },
+  playerIcon: {
+    width: 24,
+    height: 24
+  },
+  playerText: {
     color: "white"
-  }
+  },
+  trashIcon: {
+    width: 24,
+    height: 24
+  },
+  addAnotherPlayer: {
+    paddingTop: 16
+  },
 });
