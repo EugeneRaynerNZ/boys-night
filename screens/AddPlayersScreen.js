@@ -1,68 +1,94 @@
-import { View, StyleSheet, TextInput, Button, FlatList, Text, Image } from 'react-native'
+import { View, StyleSheet, TextInput, Button, FlatList, Text, Image, TouchableOpacity } from 'react-native'
 import React, { Component, useEffect, useState } from 'react'
 import { useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import HeaderLogo from '../components/HeaderLogo'
 import PlayerIcon from '../assets/user.png'
 import TrashIcon from '../assets/trash.png'
+import Player from '../models/PlayerModel'
 
 export default function AddPlayersScreen() {
 
     const route = useRoute(); // Get the route object from the navigation prop
     const { category } = route.params;  // Get the category parameter from the route object
 
-    const [name, setName] = useState(''); // State variable to store the name entered by the user
-    const [names, setNames] = useState([]); // State variable to store the list of names
+    const [name, setName] = useState('');
+    const [players, setPlayers] = useState([]); // This is the list of players that are displayed on the screen
+    const [savedPlayers, setSavedPlayers] = useState([]); // This is the list of players that are saved in AsyncStorage
 
-    useEffect(() => {
-        // Retrieve names from AsyncStorage when component mounts
-        retrieveData();
-    }, []);
+    // useEffect(() => {
+    //     // Retrieve players from AsyncStorage when component mounts
+    //     retrieveData();
+    // }, []);
 
-    const saveData = async () => {
-        try {
-        // Add new name to the list
-        const updatedNames = [...names, name];
-        setNames(updatedNames);
-        // Save the updated list to AsyncStorage
-        await AsyncStorage.setItem('names', JSON.stringify(updatedNames));
-        } catch (error) {
+    const addNewPlayer = async() =>{
+      // Check if the name is empty
+      if(name === '') {
+        return alert('Please enter a name');
+      }
+
+      //check if the player already exists
+      if(savedPlayers.some(player => player.name === name)){
+        return alert('Player already exists');
+      }
+      
+      // Create a new player object
+      try{
+        const newPlayer = new Player(name);
+        // Save the new player object to AsyncStorage
+        // await AsyncStorage.setItem('players', JSON.stringify(newPlayer));
+        // Add the new player object to the players state
+        setSavedPlayers([...savedPlayers, newPlayer]);
+        // Clear the input field
+        setName('');
+      }catch(error){
         console.error('Error saving data: ', error);
-        }
-    };
+      }
+    }
 
-    const retrieveData = async () => {
-        try {
-        // Retrieve names from AsyncStorage
-        const storedNames = await AsyncStorage.getItem('names');
-        if (storedNames !== null) {
-            // Parse retrieved data and set it in state
-            setNames(JSON.parse(storedNames));
-        }
-        } catch (error) {
-        console.error('Error retrieving data: ', error);
-        }
-    };
+    const removePlayer = (name) => {
+      // remove the player from the list of players
+      const newSavedPlayers = savedPlayers.filter(player => player.name !== name);
+      setSavedPlayers(newSavedPlayers);
+      console.log("Player has been removed from list: ", name);
+    }
+
+
+    // const retrieveData = async () => {
+    //     try {
+    //     // Retrieve players from AsyncStorage
+    //     const storedPlayers = await AsyncStorage.getItem('players');
+    //     if (storedPlayers !== null) {
+    //         // Parse retrieved data and set it in state
+    //         setPlayers(JSON.parse(storedPlayers));
+    //     }
+    //     } catch (error) {
+    //     console.error('Error retrieving data: ', error);
+    //     }
+    // };
 
 
     return (
     <View style={[styles.bodyContainer]}>
 
-      <HeaderLogo />
-
       <View style={styles.container}>
+        <View>
+          <HeaderLogo />
+        </View>
         <View style={styles.listContainer}>
           <FlatList 
-            data={names}
+            data={players}
             renderItem={
               ({ item }) => 
               <View style={styles.playerContainer}>
                 <View style={styles.player}>
                   <Image source={PlayerIcon} style={styles.playerIcon} />
-                  <Text style={styles.playerText}>{item}</Text>
+                  <Text style={styles.playerText}>{item.name}</Text>
                 </View>
                 {/* This button needs an onclick which removes the player from the list of players */}
-                <Image source={TrashIcon} style={styles.trashIcon} />
+                <TouchableOpacity onPress={()=>removePlayer(item.name)}>
+                  <Image source={TrashIcon} style={styles.trashIcon} />
+                </TouchableOpacity>
               </View>
             }
             keyExtractor={(item, index) => index.toString()} />
@@ -70,14 +96,14 @@ export default function AddPlayersScreen() {
 
         {/* When we click this button, the text input should appear and be focussed so that the user can already enter in the new name which will go into the input. The user can then click "add player now" */}
         <View style={styles.addAnotherPlayer}>
-          <Button title="Add another player" />
+          {/* <Button title="Add another player" /> */}
 
           <TextInput
             placeholder="Enter a name"
             value={name}
             onChangeText={(text) => setName(text)} />
 
-          <Button title="Add Player now" onPress={saveData} />
+          <Button title="Add New Player" onPress={addNewPlayer} />
         </View>
 
 
