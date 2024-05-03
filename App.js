@@ -1,4 +1,5 @@
 import React from 'react';
+import 'react-native-get-random-values';  // Required for generating unique IDs
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from './screens/HomeScreen';

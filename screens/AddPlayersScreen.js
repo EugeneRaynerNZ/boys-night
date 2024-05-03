@@ -9,66 +9,110 @@ import Player from '../models/PlayerModel'
 
 export default function AddPlayersScreen() {
 
-    const route = useRoute(); // Get the route object from the navigation prop
-    const { category } = route.params;  // Get the category parameter from the route object
+  const route = useRoute(); // Get the route object from the navigation prop
+  const { category } = route.params;  // Get the category parameter from the route object
 
-    const [name, setName] = useState('');
-    const [players, setPlayers] = useState([]); // This is the list of players that are displayed on the screen
-    const [savedPlayers, setSavedPlayers] = useState([]); // This is the list of players that are saved in AsyncStorage
+  const [name, setName] = useState('');
+  const [players, setPlayers] = useState([]); // This is the list of players that are displayed on the screen
+  const [savedPlayers, setSavedPlayers] = useState([]); // This is the list of players that are saved in AsyncStorage
 
-    // useEffect(() => {
-    //     // Retrieve players from AsyncStorage when component mounts
-    //     retrieveData();
-    // }, []);
-
-    const addNewPlayer = async() =>{
-      // Check if the name is empty
-      if(name === '') {
-        return alert('Please enter a name');
-      }
-
-      //check if the player already exists
-      if(savedPlayers.some(player => player.name === name)){
-        return alert('Player already exists');
-      }
-      
-      // Create a new player object
-      try{
-        const newPlayer = new Player(name);
-        // Save the new player object to AsyncStorage
-        // await AsyncStorage.setItem('players', JSON.stringify(newPlayer));
-        // Add the new player object to the players state
-        setSavedPlayers([...savedPlayers, newPlayer]);
-        // Clear the input field
-        setName('');
-      }catch(error){
-        console.error('Error saving data: ', error);
-      }
+  const addNewPlayer = async () => {
+    // Check if the name is empty
+    if (name === '') {
+      return alert('Please enter a name');
     }
 
-    const removePlayer = (name) => {
-      // remove the player from the list of players
-      const newSavedPlayers = savedPlayers.filter(player => player.name !== name);
-      setSavedPlayers(newSavedPlayers);
-      console.log("Player has been removed from list: ", name);
+    // Create a new player object
+    try {
+      const newPlayer = new Player(name);
+      // Add the new player object to the players state
+      setSavedPlayers([...savedPlayers, newPlayer]);
+      // Save the new player object to AsyncStorage
+      await AsyncStorage.setItem('players', JSON.stringify(savedPlayers));
+      // Clear the input field
+      setName('');
+      console.log("Player has been added: ", newPlayer.name);
+    } catch (error) {
+      console.error('Error saving data: ', error);
+    }
+  }
+
+//   const saveData = async () => {
+//     try {
+//     // Add new name to the list
+//     const updatedNames = [...names, name];
+//     setNames(updatedNames);
+//     // Save the updated list to AsyncStorage
+//     await AsyncStorage.setItem('names', JSON.stringify(updatedNames));
+//     } catch (error) {
+//     console.error('Error saving data: ', error);
+//     }
+// };
+
+  const removePlayer = (player) => {
+    // remove the player from the list of players
+    const newSavedPlayers = savedPlayers.filter(p => p.id !== player.id);
+    setSavedPlayers(newSavedPlayers);
+    console.log("Player has been removed from list: ", name);
+  }
+
+  const addToPlayList = (player) => {
+    //check if the player already exists in the play list
+    if (players.some(p => p.id === player.id)) {
+      return alert('Player already exists');
     }
 
+    // add the player to the list of players
+    setPlayers([...players, player]);
+    console.log("Player has been added to play list: ", player.name);
+  }
 
-    // const retrieveData = async () => {
-    //     try {
-    //     // Retrieve players from AsyncStorage
-    //     const storedPlayers = await AsyncStorage.getItem('players');
-    //     if (storedPlayers !== null) {
-    //         // Parse retrieved data and set it in state
-    //         setPlayers(JSON.parse(storedPlayers));
-    //     }
-    //     } catch (error) {
-    //     console.error('Error retrieving data: ', error);
-    //     }
-    // };
+  const removeFromPlayList = (name) => {
+    // remove the player from the list of players
+    const newPlayers = players.filter(player => player.name !== name);
+    setPlayers(newPlayers);
+    console.log("Player has been removed from play list: ", name);
+  }
 
+  const retrieveData = async () => {
+    console.log('Retrieving data');
+    try {
+      // //clear the saved players
+      // setSavedPlayers([]);
+      // //clear all the data from AsyncStorage
+      // await AsyncStorage.clear();
 
-    return (
+      // Retrieve players from AsyncStorage
+      const storedPlayers = await AsyncStorage.getItem('players');
+      if (storedPlayers !== null) {
+        // Parse retrieved data and set it in state
+        setSavedPlayers(JSON.parse(storedPlayers));
+      }else{
+        console.log('No data found');
+      }
+    } catch (error) {
+      console.error('Error retrieving data: ', error);
+    }
+  };
+// const retrieveData = async () => {
+//     try {
+//     // Retrieve names from AsyncStorage
+//     const storedNames = await AsyncStorage.getItem('names');
+//     if (storedNames !== null) {
+//         // Parse retrieved data and set it in state
+//         setNames(JSON.parse(storedNames));
+//     }
+//     } catch (error) {
+//     console.error('Error retrieving data: ', error);
+//     }
+// };
+
+  useEffect(() => {
+    // Retrieve players from AsyncStorage when component mounts
+    retrieveData();
+  }, []);
+
+  return (
     <View style={[styles.bodyContainer]}>
 
       <View style={styles.container}>
@@ -76,20 +120,21 @@ export default function AddPlayersScreen() {
           <HeaderLogo />
         </View>
         <View style={styles.listContainer}>
-          <FlatList 
+          <Text style={{ color: "white" }}>Players</Text>
+          <FlatList
             data={players}
             renderItem={
-              ({ item }) => 
-              <View style={styles.playerContainer}>
-                <View style={styles.player}>
-                  <Image source={PlayerIcon} style={styles.playerIcon} />
-                  <Text style={styles.playerText}>{item.name}</Text>
+              ({ item }) =>
+                <View style={styles.playerContainer}>
+                  <View style={styles.player}>
+                    <Image source={PlayerIcon} style={styles.playerIcon} />
+                    <Text style={styles.playerText}>{item.name}</Text>
+                  </View>
+                  {/* This button needs an onclick which removes the player from the list of players */}
+                  <TouchableOpacity onPress={() => removeFromPlayList(item.name)}>
+                    <Image source={TrashIcon} style={styles.trashIcon} />
+                  </TouchableOpacity>
                 </View>
-                {/* This button needs an onclick which removes the player from the list of players */}
-                <TouchableOpacity onPress={()=>removePlayer(item.name)}>
-                  <Image source={TrashIcon} style={styles.trashIcon} />
-                </TouchableOpacity>
-              </View>
             }
             keyExtractor={(item, index) => index.toString()} />
         </View>
@@ -101,9 +146,39 @@ export default function AddPlayersScreen() {
           <TextInput
             placeholder="Enter a name"
             value={name}
+            style={{
+              borderStyle: "solid",
+              borderWidth: 1,
+              borderColor: "red",
+              padding: 8,
+            }}
             onChangeText={(text) => setName(text)} />
 
           <Button title="Add New Player" onPress={addNewPlayer} />
+        </View>
+
+
+        {/* This is the list of saved players. When we click on a player, they should be added to the list of players */}
+        <View style={styles.listContainer}>
+          <Text style={{ color: "white" }}>Saved Players</Text>
+          <FlatList
+            data={savedPlayers}
+            renderItem={
+              ({ item }) =>
+                <TouchableOpacity onPress={() => addToPlayList(item)}>
+                  <View style={styles.playerContainer}>
+                    <View style={styles.player}>
+                      <Image source={PlayerIcon} style={styles.playerIcon} />
+                      <Text style={styles.playerText}>{item.name}</Text>
+                    </View>
+                    {/* This button needs an onclick which removes the player from the list of players */}
+                    <TouchableOpacity onPress={() => removePlayer(item)}>
+                      <Image source={TrashIcon} style={styles.trashIcon} />
+                    </TouchableOpacity>
+                  </View>
+                </TouchableOpacity>
+            }
+            keyExtractor={(item, index) => index.toString()} />
         </View>
 
 
@@ -112,8 +187,8 @@ export default function AddPlayersScreen() {
       {/* this button should navigate to the "GameScreen" */}
       <Button title="Start the game" />
     </View>
-    )
-  }
+  )
+}
 
 const styles = StyleSheet.create({
   bodyContainer: {
@@ -134,6 +209,10 @@ const styles = StyleSheet.create({
     display: "flex",
     // flexGrow: 1,
     width: "100%",
+    padding: 16,
+    borderStyle: "solid",
+    borderWidth: 1,
+    borderColor: "red",
   },
   playerContainer: {
     display: "flex",
