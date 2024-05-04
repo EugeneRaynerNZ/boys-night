@@ -1,7 +1,8 @@
 import { View, StyleSheet, TextInput, Button, FlatList, Text, Image, TouchableOpacity } from 'react-native'
 import React, { Component, useEffect, useState } from 'react'
 import { useRoute } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import Storage from '../utils/Storage';
+import { PLAYERS } from '../utils/StorageKey';
 import HeaderLogo from '../components/HeaderLogo'
 import PlayerIcon from '../assets/user.png'
 import TrashIcon from '../assets/trash.png'
@@ -22,13 +23,19 @@ export default function AddPlayersScreen() {
       return alert('Please enter a name');
     }
 
+    //check if the name already exists in the saved players
+    if (savedPlayers.some(p => p.name === name)) {
+      return alert('Player already exists');
+    }
+
     // Create a new player object
     try {
       const newPlayer = new Player(name);
+      const updatedPlayers = [...savedPlayers, newPlayer];
       // Add the new player object to the players state
-      setSavedPlayers([...savedPlayers, newPlayer]);
+      setSavedPlayers(updatedPlayers);
       // Save the new player object to AsyncStorage
-      await AsyncStorage.setItem('players', JSON.stringify(savedPlayers));
+      await Storage.setData(PLAYERS, updatedPlayers);
       // Clear the input field
       setName('');
       console.log("Player has been added: ", newPlayer.name);
@@ -36,18 +43,6 @@ export default function AddPlayersScreen() {
       console.error('Error saving data: ', error);
     }
   }
-
-//   const saveData = async () => {
-//     try {
-//     // Add new name to the list
-//     const updatedNames = [...names, name];
-//     setNames(updatedNames);
-//     // Save the updated list to AsyncStorage
-//     await AsyncStorage.setItem('names', JSON.stringify(updatedNames));
-//     } catch (error) {
-//     console.error('Error saving data: ', error);
-//     }
-// };
 
   const removePlayer = (player) => {
     // remove the player from the list of players
@@ -77,16 +72,11 @@ export default function AddPlayersScreen() {
   const retrieveData = async () => {
     console.log('Retrieving data');
     try {
-      // //clear the saved players
-      // setSavedPlayers([]);
-      // //clear all the data from AsyncStorage
-      // await AsyncStorage.clear();
-
       // Retrieve players from AsyncStorage
-      const storedPlayers = await AsyncStorage.getItem('players');
+      const storedPlayers = await Storage.getData(PLAYERS);
       if (storedPlayers !== null) {
         // Parse retrieved data and set it in state
-        setSavedPlayers(JSON.parse(storedPlayers));
+        setSavedPlayers(storedPlayers);
       }else{
         console.log('No data found');
       }
@@ -94,18 +84,6 @@ export default function AddPlayersScreen() {
       console.error('Error retrieving data: ', error);
     }
   };
-// const retrieveData = async () => {
-//     try {
-//     // Retrieve names from AsyncStorage
-//     const storedNames = await AsyncStorage.getItem('names');
-//     if (storedNames !== null) {
-//         // Parse retrieved data and set it in state
-//         setNames(JSON.parse(storedNames));
-//     }
-//     } catch (error) {
-//     console.error('Error retrieving data: ', error);
-//     }
-// };
 
   useEffect(() => {
     // Retrieve players from AsyncStorage when component mounts
