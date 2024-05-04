@@ -8,7 +8,7 @@ import PlayerIcon from '../assets/user.png'
 import TrashIcon from '../assets/trash.png'
 import Player from '../models/PlayerModel'
 
-export default function AddPlayersScreen() {
+export default function AddPlayersScreen({ navigation }) {
 
   const route = useRoute(); // Get the route object from the navigation prop
   const { category } = route.params;  // Get the category parameter from the route object
@@ -44,11 +44,13 @@ export default function AddPlayersScreen() {
     }
   }
 
-  const removePlayer = (player) => {
+  const removePlayer = async (player) => {
     // remove the player from the list of players
     const newSavedPlayers = savedPlayers.filter(p => p.id !== player.id);
     setSavedPlayers(newSavedPlayers);
-    console.log("Player has been removed from list: ", name);
+    // Save the updated list of players to AsyncStorage
+    await Storage.setData(PLAYERS, newSavedPlayers);
+    console.log("Player has been removed from list: ", player);
   }
 
   const addToPlayList = (player) => {
@@ -84,6 +86,15 @@ export default function AddPlayersScreen() {
       console.error('Error retrieving data: ', error);
     }
   };
+
+  const handleGameStart = (game) => {
+    //check if player list is empty
+    if (players.length === 0) {
+      return alert('Please add players to start the game');
+    }
+    // navigate to the AddPlayers screen and pass the category as a parameter
+    navigation.navigate(game, { players });
+  }
 
   useEffect(() => {
     // Retrieve players from AsyncStorage when component mounts
@@ -163,7 +174,7 @@ export default function AddPlayersScreen() {
       </View>
 
       {/* this button should navigate to the "GameScreen" */}
-      <Button title="Start the game" />
+      <Button title="Start the game" onPress={()=>handleGameStart('Game')} />
     </View>
   )
 }

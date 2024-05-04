@@ -33,15 +33,6 @@ const Storage = {
             console.error('Error removing data: ', error);
         }
     },
-
-    //update data in AsyncStorage
-    updateData: async (key, value) => {
-        try {
-            await AsyncStorage.setItem(key, JSON.stringify(value));
-        } catch (error) {
-            console.error('Error updating data: ', error);
-        }
-    }
 };
 
 export default Storage;
