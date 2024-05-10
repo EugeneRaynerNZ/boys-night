@@ -9,7 +9,7 @@ import GameLoader from '../components/games/GameLoader';
 export default function GameScreen() {
 
   const route = useRoute(); // Get the route object from the navigation prop
-  const { category ,players } = route.params;  // Get the category parameter from the route object
+  const { category, players } = route.params;  // Get the category parameter from the route object
   const [round, setRound] = useState(1);
   const gameCategory = GameLoader.getInstance().getGameByName(category);
   const gameSession = new GameSession(gameCategory, players);
@@ -17,20 +17,12 @@ export default function GameScreen() {
 
   const handleNextRound = () => {
     setRound(round + 1);
-  }
-
-  const handleFinishGame = () => {
-    //save the game session to the player
-    players.forEach(player => {
-      player.addGameSession(gameSession);
-    });
-  }
+    console.log(gameSession.getAllScores());
+  };
 
   const handleScoreUpdate = (playerId, score) => {
-    const updatedScores = { ...gameSession.playerScore };
     gameSession.addPlayerScore(playerId, score);
-  }
-
+  };
 
   return (
     <View style={styles.bodyContainer}>
@@ -51,14 +43,14 @@ export default function GameScreen() {
                 ({ item }) =>
                   <View style={styles.player}>
                     <Text style={styles.playerName}>{item.name}</Text>
-                    <TextInput 
+                    <TextInput
                       style={styles.playerScore}
                       placeholder="0"
                       type="number"
                       keyboardType="numeric"
                       onChangeText={(score) => handleScoreUpdate(item.id, score)}
 
-                       />
+                    />
                   </View>
               }
               keyExtractor={(item, index) => index.toString()} />
@@ -66,7 +58,6 @@ export default function GameScreen() {
 
           <Button title="Next Round" onPress={handleNextRound} />
           <Button title="Finish Game" onPress={handleNextRound} />
-          {console.log(gameSession.getAllScores())}
 
         </View>
 
