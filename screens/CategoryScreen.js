@@ -1,31 +1,46 @@
-import { Text, View, StyleSheet, Image, TouchableOpacity } from 'react-native'
-import React from 'react'
-import HeaderLogo from '../components/HeaderLogo'
-import GolfIcon from '../assets/golf.png'
-import PoolIcon from '../assets/pool.png'
+import { Text, View, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import Storage, {GAMES} from '../utils/Storage';
+import HeaderLogo from '../components/HeaderLogo';
 
 export default function CategoryScreen({ navigation }) {
+
+  const [games, setGames] = useState([]);
 
   const handleGameSelection = (category) => {
     // navigate to the AddPlayers screen and pass the category as a parameter
     navigation.navigate('AddPlayers', { category });
   }
 
+  const loadGames = async () => {
+    const savedGames = await Storage.getData(GAMES);
+    if (savedGames !== null) {
+      setGames(savedGames);
+    }
+  }
+
+  const GameCard = ({ game })  =>{
+    return (
+      <TouchableOpacity onPress={() => handleGameSelection(game.name)} style={styles.category}>
+          <Image source={game.logo} style={styles.categoryImage} />
+          <Text style={styles.categoryText}>{game.name}</Text>
+        </TouchableOpacity>
+    )
+  }
+
+  useEffect(() => {
+    // Load the games from AsyncStorage
+    loadGames();
+    }, []);
+
   return (
     <View style={[styles.bodyContainer]}>
 
       <HeaderLogo />
 
-      {/* if we click Golf, we should go to "add players screen" */}
-      <TouchableOpacity onPress={() => handleGameSelection('Golf')} style={styles.category}>
-        <Image source={GolfIcon} style={styles.categoryImage} />
-        <Text style={styles.categoryText}>Golf</Text>
-      </TouchableOpacity>
-      {/* if we click Pool, we should go to "add players screen" */}
-      <TouchableOpacity onPress={() => handleGameSelection('Pool')} style={styles.category}>
-        <Image source={PoolIcon} style={styles.categoryImage} />
-        <Text style={styles.categoryText}>Pool</Text>
-      </TouchableOpacity>
+      {games.map((game, index) => (
+        <GameCard key={index} game={game} />
+      ))}
     </View>
   )
 }

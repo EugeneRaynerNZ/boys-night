@@ -1,7 +1,8 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import 'react-native-get-random-values';  // Required for generating unique IDs
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import GameLoader from './components/games/GameLoader';
 import HomeScreen from './screens/HomeScreen';
 import Category from './screens/CategoryScreen';
 import AddPlayers from './screens/AddPlayersScreen';
@@ -10,6 +11,12 @@ import GameScreen from './screens/GameScreen';
 const Stack = createStackNavigator();
 
 export default function App() {
+
+  useEffect(() => {
+    // Load the games from AsyncStorage
+    GameLoader.getInstance().loadGames();
+  }, []);
+
   return (
     <NavigationContainer>
       <Stack.Navigator>

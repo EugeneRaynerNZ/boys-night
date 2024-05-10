@@ -1,12 +1,11 @@
 import { View, StyleSheet, TextInput, Button, FlatList, Text, Image, TouchableOpacity } from 'react-native'
 import React, { Component, useEffect, useState } from 'react'
 import { useRoute } from '@react-navigation/native';
-import Storage from '../utils/Storage';
-import { PLAYERS } from '../utils/StorageKey';
-import HeaderLogo from '../components/HeaderLogo'
-import PlayerIcon from '../assets/user.png'
-import TrashIcon from '../assets/trash.png'
-import Player from '../models/PlayerModel'
+import Storage, {PLAYERS} from '../utils/Storage';
+import HeaderLogo from '../components/HeaderLogo';
+import PlayerIcon from '../assets/user.png';
+import TrashIcon from '../assets/trash.png';
+import Player from '../models/PlayerModel';
 
 export default function AddPlayersScreen({ navigation }) {
 
@@ -23,7 +22,6 @@ export default function AddPlayersScreen({ navigation }) {
       return alert('Please enter a name');
     }
 
-    //check if the name already exists in the saved players
     if (savedPlayers.some(p => p.name === name)) {
       return alert('Player already exists');
     }
@@ -79,7 +77,7 @@ export default function AddPlayersScreen({ navigation }) {
       if (storedPlayers !== null) {
         // Parse retrieved data and set it in state
         setSavedPlayers(storedPlayers);
-      }else{
+      } else {
         console.log('No data found');
       }
     } catch (error) {
@@ -93,7 +91,7 @@ export default function AddPlayersScreen({ navigation }) {
       return alert('Please add players to start the game');
     }
     // navigate to the AddPlayers screen and pass the category as a parameter
-    navigation.navigate(game, { players });
+    navigation.navigate(game, { category, players });
   }
 
   useEffect(() => {
@@ -109,7 +107,7 @@ export default function AddPlayersScreen({ navigation }) {
           <HeaderLogo />
         </View>
         <View style={styles.listContainer}>
-          <Text style={{ color: "white" }}>Players</Text>
+          <Text style={{ color: "white" }}>Players for {category}</Text>
           <FlatList
             data={players}
             renderItem={
@@ -174,7 +172,7 @@ export default function AddPlayersScreen({ navigation }) {
       </View>
 
       {/* this button should navigate to the "GameScreen" */}
-      <Button title="Start the game" onPress={()=>handleGameStart('Game')} />
+      <Button title="Start the game" onPress={() => handleGameStart('Game')} />
     </View>
   )
 }

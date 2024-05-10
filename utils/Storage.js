@@ -6,13 +6,22 @@ const Storage = {
     // Save data to AsyncStorage
     setData: async (key, value) => {
         try {
-            await AsyncStorage.setItem(key, JSON.stringify(value));
-            console.log('Data has been saved', key, value);
+            // Get the previous data
+            const perviousData = await AsyncStorage.getItem(key);
+            if (perviousData !== null) {
+                const newData = JSON.parse(perviousData);
+                newData.push(value);    // Add the new data to the previous data
+                await AsyncStorage.setItem(key, JSON.stringify(newData));
+                console.log('Data has been saved', key, value);
+                return;
+            }
+            // If there is no previous data, create a new array with the new data
+            await AsyncStorage.setItem(key, JSON.stringify([value]));
         } catch (error) {
             console.error('Error saving data: ', error);
         }
     },
-    
+
     // Get data from AsyncStorage
     getData: async (key) => {
         try {
@@ -35,4 +44,9 @@ const Storage = {
     },
 };
 
+const PLAYERS = 'players';
+const GAMES = 'games';
+const GAME_SESSIONS = 'game_sessions';
+
 export default Storage;
+export { PLAYERS, GAMES, GAME_SESSIONS };

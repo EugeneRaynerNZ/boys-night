@@ -1,21 +1,12 @@
+import { v4 as uuidv4 } from 'uuid';
+
 export default class Game{
 
     logo;
     description;
 
-    constructor(id, name, defaultScore){
-        this.id = id;
+    constructor(name){
+        this.id = uuidv4();
         this.name = name;
-        this.defaultScore = defaultScore;
-    }
-
-    winGame(){
-        console.log("You won the game");
-        return this.defaultScore;
-    }
-
-    loseGame(){
-        console.log("You lost the game");
-        return 0;
     }
 }

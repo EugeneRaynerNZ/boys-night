@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet, Button, Image } from 'react-native';
 import LoginLogo from '../assets/login-logo2.png'
 
-const Home = ({navigation}) => {
+function Home ({navigation}) {
   return (
     <View style={styles.bodyContainer}>
 

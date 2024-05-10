@@ -9,11 +9,11 @@ export default class Player {
     
     //add a game session to the player
     addGameSession(gameSession){
-        const gameName = gameSession.gameName;
-        if(!this.gameSessions.has(gameName)){
-            this.gameSessions.set(gameName, []);
-        }
-        this.gameSessions.get(gameName).push(gameSession);
+        // const gameName = gameSession.gameName;
+        // if(!this.gameSessions.has(gameName)){
+        //     this.gameSessions.set(gameName, []);
+        // }
+        // this.gameSessions.get(gameName).push(gameSession);
     }
 
     //get all game sessions of a specific game for the player
