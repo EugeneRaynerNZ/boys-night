@@ -44,6 +44,13 @@ export default class GameLoader {
         }
     }
 
+    async reloadGames() {
+        //clear all games
+        this.games = [];
+        //load games from AsyncStorage
+        await this.loadGames();
+    }
+
     addGame(game) {
         this.games.push(game);
         Storage.setData(GAMES, this.games);

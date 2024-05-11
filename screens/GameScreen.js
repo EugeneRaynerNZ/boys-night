@@ -1,5 +1,5 @@
 import { View, StyleSheet, TextInput, Button, FlatList, Text, Image } from 'react-native'
-import React, { Component, useEffect, useState } from 'react'
+import React, { Component, useEffect, useState, useRef } from 'react'
 import { useRoute } from '@react-navigation/native';
 import HeaderLogo from '../components/HeaderLogo'
 import GameSession from '../models/GameSessionModel';
@@ -10,24 +10,58 @@ export default function GameScreen() {
 
   const route = useRoute(); // Get the route object from the navigation prop
   const { category, players } = route.params;  // Get the category parameter from the route object
-  const [round, setRound] = useState(1);
   const gameCategory = GameLoader.getInstance().getGameByName(category);
-  const gameSession = new GameSession(gameCategory, players);
+  // const gameSession = new GameSession(gameCategory, players);
+  const [gameSession, setGameSession] = useState(new GameSession(gameCategory, players));
+  const [round, setRound] = useState(1);
+  const [playerScores, setPlayerScores] = useState([]);
 
+  const handlePlayerScoreChange = (playerId, score) => {
+    console.log(`Player ${playerId} scored ${score}`);
+    //coverting score to number
+    score = parseInt(score,10);
+    // Add the player's score to the playerScores array
+    setPlayerScores((prevPlayerScores) => [
+      ...prevPlayerScores,
+      {
+        playerId,
+        score
+      }
+    ]);
+
+    console.log("Player Scores: ", playerScores);
+    console.log("----------------------------------------------")
+  }
 
   const handleNextRound = () => {
+    console.log("Next Round Called!");
+    console.log("Current Player Scores: ", playerScores);
+    // Add the playerScores to the gameSession
+    playerScores.forEach(playerScore => {
+      gameSession.addPlayerScore(playerScore.playerId, playerScore.score);
+    });
+    // Increment the round number
     setRound(round + 1);
-    console.log(gameSession.getAllScores());
-  };
+    // Clear the playerScores array
+    setPlayerScores([]);
+    console.log("session Id: ", gameSession.id);
+    console.log("Player Scores: ", gameSession.getAllScores());
+    console.log("----------------------------------------------")
+  }
 
-  const handleScoreUpdate = (playerId, score) => {
-    gameSession.addPlayerScore(playerId, score);
-  };
+  const handleFinishGame = () =>{
+    console.log("Finish Game Called!");
+    handleNextRound();
+    
+    console.log("session Id: ", gameSession.id);
+    console.log("Player Scores: ", gameSession.getAllScores());
+    console.log("----------------------------------------------")
+  }
 
   return (
     <View style={styles.bodyContainer}>
-      <HeaderLogo />
       <View style={styles.container}>
+      <HeaderLogo />
 
         <View style={styles.columnHeadingsContainer}>
           <Text style={styles.columnHeading}>{category} Round {round}</Text>
@@ -48,16 +82,31 @@ export default function GameScreen() {
                       placeholder="0"
                       type="number"
                       keyboardType="numeric"
-                      onChangeText={(score) => handleScoreUpdate(item.id, score)}
-
+                      onChangeText={(score) => handlePlayerScoreChange(item.id, score)}
+                      value={playerScores.find(playerScore => playerScore.playerId === item.id) ? playerScores.find(playerScore => playerScore.playerId === item.id).score : ""}
                     />
                   </View>
               }
               keyExtractor={(item, index) => index.toString()} />
+          {/* print out the scores in table */}
           </View>
 
           <Button title="Next Round" onPress={handleNextRound} />
-          <Button title="Finish Game" onPress={handleNextRound} />
+          <Button title="Finish Game" />
+          <FlatList
+            data={players}
+            renderItem={
+              ({ item }) =>
+                <View style={styles.player}>
+                  <Text style={styles.playerName}>{item.name}</Text>
+                  <Text style={styles.playerScore}>{gameSession.playerScore.get(item.id).score}</Text>
+                  <Text style={styles.playerScore}>{gameSession.getPlayerTotalScore(item.id)}</Text>
+
+                </View>
+            }
+            keyExtractor={(item, index) => index.toString()} />
+
+
 
         </View>
 

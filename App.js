@@ -14,7 +14,7 @@ export default function App() {
 
   useEffect(() => {
     // Load the games from AsyncStorage
-    GameLoader.getInstance().loadGames();
+    GameLoader.getInstance().reloadGames();
   }, []);
 
   return (

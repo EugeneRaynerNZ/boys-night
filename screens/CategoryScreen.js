@@ -2,6 +2,8 @@ import { Text, View, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Storage, {GAMES} from '../utils/Storage';
 import HeaderLogo from '../components/HeaderLogo';
+import { Button } from 'react-native';
+import GameLoader from '../components/games/GameLoader';
 
 export default function CategoryScreen({ navigation }) {
 
