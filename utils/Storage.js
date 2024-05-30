@@ -6,6 +6,14 @@ const Storage = {
     // Save data to AsyncStorage
     setData: async (key, value) => {
         try {
+            await AsyncStorage.setItem(key, JSON.stringify([value]));
+        } catch (error) {
+            console.error('Error saving data: ', error);
+        }
+    },
+
+    addData: async (key, value) => {
+        try {
             // Get the previous data
             const perviousData = await AsyncStorage.getItem(key);
             if (perviousData !== null) {
@@ -13,24 +21,34 @@ const Storage = {
                 newData.push(value);    // Add the new data to the previous data
                 await AsyncStorage.setItem(key, JSON.stringify(newData));
                 console.log('Data has been saved', key, value);
-                return;
+            }else{
+                // If there is no previous data, create a new array with the new data
+                await AsyncStorage.setItem(key, JSON.stringify([value]));
             }
-            // If there is no previous data, create a new array with the new data
-            await AsyncStorage.setItem(key, JSON.stringify([value]));
         } catch (error) {
             console.error('Error saving data: ', error);
         }
     },
 
+    megerData: async (key, value) => {
+        try {
+            await AsyncStorage.mergeItem(key, JSON.stringify(value));
+            console.log('Data has been saved', key, value);
+        } catch (error) {
+            console.error('Error saving data: ', error);
+        }
+    },
     // Get data from AsyncStorage
     getData: async (key) => {
         try {
             const value = await AsyncStorage.getItem(key);
-            if (value !== null) {
+            if (value !== null && value !== undefined) {
                 return JSON.parse(value);
+            } else {
+                return null;
             }
         } catch (error) {
-            console.error('Error retrieving data: ', error);
+            console.error('Error retrieving data - from Storage.getData(): ', error);
         }
     },
 

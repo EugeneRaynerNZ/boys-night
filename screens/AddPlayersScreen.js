@@ -16,38 +16,45 @@ export default function AddPlayersScreen({ navigation }) {
   const [players, setPlayers] = useState([]); // This is the list of players that are displayed on the screen
   const [savedPlayers, setSavedPlayers] = useState([]); // This is the list of players that are saved in AsyncStorage
 
+
+
   const addNewPlayer = async () => {
     // Check if the name is empty
     if (name === '') {
       return alert('Please enter a name');
     }
 
-    if (savedPlayers.some(p => p.name === name)) {
+    if(savedPlayers.some(p => p.name === name)){
       return alert('Player already exists');
     }
 
     // Create a new player object
+    const newPlayer = new Player(name);
+    
     try {
-      const newPlayer = new Player(name);
-      const updatedPlayers = [...savedPlayers, newPlayer];
-      // Add the new player object to the players state
-      setSavedPlayers(()=>(updatedPlayers));
       // Save the new player object to AsyncStorage
-      await Storage.setData(PLAYERS, updatedPlayers);
-      // Clear the input field
-      setName('');
+      await Storage.addData(PLAYERS, newPlayer);
+      // await Storage.megerData(PLAYERS, newPlayer);
       console.log("Player has been added: ", newPlayer.name);
     } catch (error) {
-      console.error('Error saving data: ', error);
+      console.error('Error saving data - from AddPlayersScreen.addNewPlayer(): ', error);
     }
+
+    // Add the new player object to the list of saved players state
+    const updatedPlayers = [...savedPlayers, newPlayer];
+    // Add the new player object to the players state
+    setSavedPlayers(()=>(updatedPlayers));
+    // Clear the input field
+    setName('');
   }
 
   const removePlayer = async (player) => {
     // remove the player from the list of players
     const newSavedPlayers = savedPlayers.filter(p => p.id !== player.id);
-    setSavedPlayers(newSavedPlayers);
+    setSavedPlayers(()=>(newSavedPlayers));
     // Save the updated list of players to AsyncStorage
-    await Storage.setData(PLAYERS, newSavedPlayers);
+    await Storage.addData(PLAYERS, newSavedPlayers);
+    // await Storage.megerData(PLAYERS, newSavedPlayers);
     console.log("Player has been removed from list: ", player);
   }
 
@@ -73,16 +80,16 @@ export default function AddPlayersScreen({ navigation }) {
     console.log('Retrieving data');
     try {
       // Retrieve players from AsyncStorage
-      const storedPlayers = await Storage.getData(PLAYERS);
-      if (storedPlayers !== null || storedPlayers !== undefined || storedPlayers.length > 0) {
+      const newSvaedPlayers = await Storage.getData(PLAYERS);
+      if (newSvaedPlayers !== null && newSvaedPlayers !== undefined) {
         // Parse retrieved data and set it in state
-        setSavedPlayers(storedPlayers);
-        console.log('Data retrieved: ', storedPlayers);
+        setSavedPlayers(()=>(newSvaedPlayers));
+        console.log('Data retrieved: ', newSvaedPlayers);
       } else {
         console.log('No data found');
       }
     } catch (error) {
-      console.error('Error retrieving data: ', error);
+      console.error('Error retrieving data - from AddPlayersScreen.retrieveData(): ', error);
     }
   };
 
@@ -94,6 +101,14 @@ export default function AddPlayersScreen({ navigation }) {
     // navigate to the AddPlayers screen and pass the category as a parameter
     navigation.navigate(game, { category, players });
   }
+
+  const clearAllPlayers = async () => {
+    // Clear all players from the AsyncStorage
+    await Storage.removeData(PLAYERS);
+    setSavedPlayers([]);
+    return alert('All players have been removed');
+  }
+
 
   useEffect(() => {
     // Retrieve players from AsyncStorage when component mounts
@@ -157,7 +172,9 @@ export default function AddPlayersScreen({ navigation }) {
                   <View style={styles.playerContainer}>
                     <View style={styles.player}>
                       <Image source={PlayerIcon} style={styles.playerIcon} />
+                      {/* <Text style={styles.playerText}>{item.id}</Text> */}
                       <Text style={styles.playerText}>{item.name}</Text>
+
                     </View>
                     {/* This button needs an onclick which removes the player from the list of players */}
                     <TouchableOpacity onPress={() => removePlayer(item)}>
@@ -174,6 +191,8 @@ export default function AddPlayersScreen({ navigation }) {
 
       {/* this button should navigate to the "GameScreen" */}
       <Button title="Start the game" onPress={() => handleGameStart('Game')} />
+      <Button title="clear saved players" onPress={() => clearAllPlayers()} />
+
     </View>
   )
 }
