@@ -4,7 +4,7 @@ export default class Player {
     constructor(name) {
         this.name = name;
         this.id = uuidv4();
-        this.gameSessions = new Map(); //key is the game name and value is the game session
+        // this.gameSessions = new Map(); //key is the game name and value is the game session
     }
     
     //add a game session to the player

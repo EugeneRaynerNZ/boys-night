@@ -1,4 +1,3 @@
-import Storage, {GAMES} from '../../utils/Storage';
 import Game from '../../models/GameModel';
 import GolfIcon from '../../assets/golf.png';
 import PoolIcon from '../../assets/pool.png';
@@ -18,6 +17,7 @@ export default class GameLoader {
     }
 
     createDefaultGames() {
+        this.games = [];
         //new game
         const golf = new Game("Golf");
         golf.logo = GolfIcon;
@@ -31,29 +31,12 @@ export default class GameLoader {
         this.games.push(pool);
     }
 
-    async loadGames() {
-        //load games from AsyncStorage
-        const savedGames = await Storage.getData(GAMES);
-        if (savedGames == null) {
-            //if no games are saved, create default games
-            this.createDefaultGames();
-            //save the default games
-            await Storage.setData(GAMES, this.games);
-        }else{
-            this.games = savedGames;
-        }
-    }
-
-    async reloadGames() {
-        //clear all games
-        this.games = [];
-        //load games from AsyncStorage
-        await this.loadGames();
-    }
+    getAllGames() {
+        return this.games;
+    }   
 
     addGame(game) {
         this.games.push(game);
-        Storage.setData(GAMES, this.games);
     }
 
     getGameByName(name) {

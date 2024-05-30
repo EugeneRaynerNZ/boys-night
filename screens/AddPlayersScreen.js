@@ -31,7 +31,7 @@ export default function AddPlayersScreen({ navigation }) {
       const newPlayer = new Player(name);
       const updatedPlayers = [...savedPlayers, newPlayer];
       // Add the new player object to the players state
-      setSavedPlayers(updatedPlayers);
+      setSavedPlayers(()=>(updatedPlayers));
       // Save the new player object to AsyncStorage
       await Storage.setData(PLAYERS, updatedPlayers);
       // Clear the input field
@@ -74,9 +74,10 @@ export default function AddPlayersScreen({ navigation }) {
     try {
       // Retrieve players from AsyncStorage
       const storedPlayers = await Storage.getData(PLAYERS);
-      if (storedPlayers !== null) {
+      if (storedPlayers !== null || storedPlayers !== undefined || storedPlayers.length > 0) {
         // Parse retrieved data and set it in state
         setSavedPlayers(storedPlayers);
+        console.log('Data retrieved: ', storedPlayers);
       } else {
         console.log('No data found');
       }

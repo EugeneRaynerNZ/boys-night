@@ -1,9 +1,8 @@
 import { Text, View, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import Storage, {GAMES} from '../utils/Storage';
 import HeaderLogo from '../components/HeaderLogo';
-import { Button } from 'react-native';
 import GameLoader from '../components/games/GameLoader';
+
 
 export default function CategoryScreen({ navigation }) {
 
@@ -11,14 +10,12 @@ export default function CategoryScreen({ navigation }) {
 
   const handleGameSelection = (category) => {
     // navigate to the AddPlayers screen and pass the category as a parameter
-    navigation.navigate('AddPlayers', { category });
-  }
-
-  const loadGames = async () => {
-    const savedGames = await Storage.getData(GAMES);
-    if (savedGames !== null) {
-      setGames(savedGames);
+    if(category === null || category === undefined || category === ""){
+      console.log("category is empty");
+      alert("Please select a game to continue");
+      return
     }
+    navigation.navigate('AddPlayers', { category });
   }
 
   const GameCard = ({ game })  =>{
@@ -30,19 +27,23 @@ export default function CategoryScreen({ navigation }) {
     )
   }
 
+  const loadGames = () => {
+    const gameLoader = GameLoader.getInstance();
+    const allGames = gameLoader.getAllGames();
+    // gameLoader.addGame({name: "Custom Game", logo: require('../assets/user.png'), description: "Create your own game"});
+    setGames(allGames);
+  }
+
   useEffect(() => {
-    // Load the games from AsyncStorage
     loadGames();
-    }, []);
+  }, []);
+
 
   return (
     <View style={[styles.bodyContainer]}>
 
       <HeaderLogo />
-
-      {games.map((game, index) => (
-        <GameCard key={index} game={game} />
-      ))}
+      {games.length === 0 ? <Text>Loading...</Text> : games.map((game, index) => (<GameCard key={index} game={game} />))}
     </View>
   )
 }
