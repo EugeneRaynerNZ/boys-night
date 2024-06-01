@@ -1,0 +1,104 @@
+import React, { useState, useEffect } from 'react';
+import { useRoute } from '@react-navigation/native';
+import { Text, View, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
+
+export default function GameOverScreen({ navigation }) {
+
+    const route = useRoute(); // Get the route object from the navigation prop
+    const { gameSession } = route.params;  // Get the category parameter from the route object
+    const [players, setPlayers] = useState(gameSession.playerScore); // This is the list of players that are displayed on the screen
+    // const players = gameSession.players;
+    const playerScoresArray = Array.from(gameSession.playerScore.entries()).map(([playerId, playerData]) => ({
+        playerId,
+        playerName: playerData.playerName,
+        scores: playerData.score
+    }));
+
+    const [winner, setWinner] = useState('');
+
+    const calculateWinner = () => {
+        // set the winner to the one who has the lowest score
+        let lowestScore = Number.MAX_VALUE;
+        let winner = '';
+        playerScoresArray.forEach(player => {
+            let totalScore = gameSession.getPlayerTotalScore(player.playerId);
+            if (totalScore < lowestScore) {
+                lowestScore = totalScore;
+                winner = player.playerName;
+            }
+        });
+        setWinner(winner);
+    }
+
+    useEffect(() => {
+        calculateWinner();
+        console.log("Game Over Screen: ");
+        console.log("Game Session: ", gameSession);
+        console.log("Players: ", players)
+        console.log("Player Scores: ", players[0])
+    }, [])
+
+    return (
+        <View style={styles.bodyContainer}>
+            <View style={styles.columnHeadingsContainer}>
+                <Text style={styles.columnHeading}>Player</Text>
+                <Text style={styles.columnHeading}>Score</Text>
+            </View>
+
+            {playerScoresArray.map((player) => (
+                <View key={player.playerId}>
+                    <Text>{player.playerName}</Text>
+                    <Text>{player.scores.join(', ')}</Text>
+                    <Text>{gameSession.getPlayerTotalScore(player.playerId)}</Text>
+                </View>
+            ))}
+                <Text style={styles.columnHeading}>The Winner is {winner}</Text>
+        </View>
+    )
+}
+
+const styles = StyleSheet.create({
+    bodyContainer: {
+        backgroundColor: '#474747',
+        flex: 1,
+        display: "flex",
+        padding: 20,
+        flexWrap: "wrap",
+        flexDirection: "column",
+        gap: 16
+    },
+    container: {
+        display: "flex",
+        flexDirection: "column",
+        width: "100%",
+    },
+    columnHeadingsContainer: {
+
+    },
+    columnHeading: {
+        color: "white"
+    },
+    playersContainer: {
+        display: "flex",
+        rowGap: 16
+    },
+    player: {
+        display: "flex",
+        justifyContent: "space-between",
+        flexDirection: "row",
+        borderRadius: 8,
+        borderStyle: "solid",
+        borderWidth: 1,
+        borderColor: "red",
+        padding: 8,
+    },
+    playerName: {
+        color: "white",
+        flex: 3
+    },
+    playerScore: {
+        backgroundColor: "#848484",
+        flex: 1
+    },
+});

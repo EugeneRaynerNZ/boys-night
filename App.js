@@ -7,6 +7,7 @@ import HomeScreen from './screens/HomeScreen';
 import Category from './screens/CategoryScreen';
 import AddPlayers from './screens/AddPlayersScreen';
 import GameScreen from './screens/GameScreen';
+import GameOverScreen from './screens/GameOverScreen';
 
 const Stack = createStackNavigator();
 
@@ -28,6 +29,7 @@ export default function App() {
         <Stack.Screen name="Category" component={Category} options={{title:'Game Selection'}} />
         <Stack.Screen name="AddPlayers" component={AddPlayers} options={{title:'Add Players'}}/>
         <Stack.Screen name="Game" component={GameScreen} options={{title:'Game'}}/>
+        <Stack.Screen name="GameOver" component={GameOverScreen} options={{title:'Game Over'}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -49,7 +49,6 @@ export default function CategoryScreen({ navigation }) {
 }
 
 
-
 const styles = StyleSheet.create({
   bodyContainer: {
     backgroundColor: '#474747',
