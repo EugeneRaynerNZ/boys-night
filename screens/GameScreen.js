@@ -63,15 +63,20 @@ export default function GameScreen({ navigation }) {
     console.log("----------------------------------------------")
   }
 
-  const handleNextRound = () => {
-    console.log("Next Round Called!");
-    console.log("Current Player Scores: ", roundScores);
+  const addPlayerScore = () => {
     // Add the roundScores to the gameSession
     roundScores.forEach(playerScore => {
       gameSession.addPlayerScore(playerScore.playerId, playerScore.score);
     });
+  }
+
+  const handleNextRound = () => {
+    console.log("Next Round Called!");
+    console.log("Current Player Scores: ", roundScores);
     // Increment the round number
     setRound(round + 1);
+    // Add the roundScores to the gameSession
+    addPlayerScore();
     // Clear the roundScores array
     setRoundScores([]);
     //reset the score to 0
@@ -81,21 +86,32 @@ export default function GameScreen({ navigation }) {
     console.log("----------------------------------------------")
   }
 
-  const handleFinishGame = async () =>{
-    console.log("Finish Game Called!");
-    handleNextRound();
+  const saveData = async () => {
+    await Storage.addData(GAME_SESSIONS, gameSession);
+  }
 
+  const gameover = () => {
+    addPlayerScore();
+  
     gameSession.endGameSession();
-
+  
     // save the game session 
     setGameSession(()=>(gameSession));
-    await Storage.addData(GAME_SESSIONS, gameSession);
+  }
 
+  const handleFinishGame = () =>{
+    console.log("Finish Game Called!");
+    gameover();
+    // Add the roundScores to the gameSession
+    console.log("Game Session: ", gameSession);
     console.log("session Id: ", gameSession.id);
     console.log("Player Scores: ", gameSession.getAllScores());
     console.log("----------------------------------------------")
+    saveData();
     navigation.navigate('GameOver', { gameSession });
   }
+
+
 
   const resetScores = () => {
     //initialize the player scores to 0
@@ -145,7 +161,7 @@ export default function GameScreen({ navigation }) {
               }
               keyExtractor={(item, index) => index.toString()} />
           </View>
-            {round < rounds ? <Button title="Next Round" onPress={handleNextRound} /> : <Button title="Finish Game" onPress={handleFinishGame} />}
+            {round < rounds ? <Button title="Next Round" onPress={handleNextRound} /> : <Button style={styles.finishButton} title="Finish Game" onPress={handleFinishGame} />}
           
           <View >
             {/*
@@ -218,4 +234,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#848484",
     flex: 1
   },
+  finishButton:{
+    color:"black",
+  }
 });

@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useRoute } from '@react-navigation/native';
 import { Text, View, StyleSheet, Button, Image, TouchableOpacity } from 'react-native';
+import Storage, {GAME_SESSIONS} from '../utils/Storage';
+import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 export default function GameOverScreen({ navigation }) {
 
     const route = useRoute(); // Get the route object from the navigation prop
     const { gameSession } = route.params;  // Get the category parameter from the route object
     const [players, setPlayers] = useState(gameSession.playerScore); // This is the list of players that are displayed on the screen
+    let savedSessions;
     // const players = gameSession.players;
     const playerScoresArray = Array.from(gameSession.playerScore.entries()).map(([playerId, playerData]) => ({
         playerId,
@@ -33,12 +36,19 @@ export default function GameOverScreen({ navigation }) {
         setWinner(winner);
     }
 
+    const getStoredGameSessions = async () => {
+        savedSessions = await Storage.getData(GAME_SESSIONS);
+        console.log("saved Sessions: ", savedSessions);
+    }
+    
     useEffect(() => {
         calculateWinner();
+        getStoredGameSessions();
         console.log("Game Over Screen: ");
         console.log("Game Session: ", gameSession);
         console.log("Players: ", players)
-        console.log("Player Scores: ", players[0])
+        console.log("saved Sessions: ", savedSessions);
+        console.log("--------------------------------");
     }, [])
 
     return (
@@ -56,6 +66,7 @@ export default function GameOverScreen({ navigation }) {
             ))}
             {winner === null ? <Text style={styles.columnHeading}>It's a tie!</Text> : <Text style={styles.columnHeading}>The Winner is {winner}</Text>}
             <Button title="Finish" onPress={()=>(navigation.navigate('Category'))} />
+            <Button title="refresh" onPress={()=>(getStoredGameSessions)} />
 
         </View>
     )

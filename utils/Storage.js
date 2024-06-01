@@ -38,7 +38,7 @@ const Storage = {
             newData.push(value);
             // Save the new data
             await AsyncStorage.setItem(key, JSON.stringify(newData));
-            console.log('Data has been added', key, value);
+            console.log('Storage - Data has been added', key, value);
         } catch (error) {
             console.error('Error adding data: ', error);
         }

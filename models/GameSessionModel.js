@@ -46,6 +46,8 @@ export default class GameSession {
     //end the game session
     endGameSession(){
         this.endTime = new Date();
+        console.log("Game Session Ended: ", this.endTime);
+        console.log("Player Scores: ", this.playerScore);
         //save this game session id to the players
         // this.players.forEach(player => {
             // player.addGameSession(this.id);
