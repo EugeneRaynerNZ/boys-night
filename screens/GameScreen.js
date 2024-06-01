@@ -1,6 +1,7 @@
 import { View, StyleSheet, TextInput, Button, FlatList, Text, Image } from 'react-native'
 import React, { Component, useEffect, useState, useRef } from 'react'
 import { useRoute } from '@react-navigation/native';
+import Storage, { GAME_SESSIONS } from '../utils/Storage';
 import HeaderLogo from '../components/HeaderLogo'
 import GameSession from '../models/GameSessionModel';
 import GameLoader from '../components/games/GameLoader';
@@ -8,7 +9,7 @@ import GameLoader from '../components/games/GameLoader';
 export default function GameScreen({ navigation }) {
 
   const route = useRoute(); // Get the route object from the navigation prop
-  const { category, players } = route.params;  // Get the category parameter from the route object
+  const { category, players, rounds } = route.params;  // Get the category parameter from the route object
   const gameCategory = GameLoader.getInstance().getGameByName(category);
   const [gameSession, setGameSession] = useState(new GameSession(gameCategory, players));
   const [round, setRound] = useState(1);
@@ -80,7 +81,7 @@ export default function GameScreen({ navigation }) {
     console.log("----------------------------------------------")
   }
 
-  const handleFinishGame = () =>{
+  const handleFinishGame = async () =>{
     console.log("Finish Game Called!");
     handleNextRound();
 
@@ -88,6 +89,7 @@ export default function GameScreen({ navigation }) {
 
     // save the game session 
     setGameSession(()=>(gameSession));
+    await Storage.addData(GAME_SESSIONS, gameSession);
 
     console.log("session Id: ", gameSession.id);
     console.log("Player Scores: ", gameSession.getAllScores());
@@ -143,9 +145,8 @@ export default function GameScreen({ navigation }) {
               }
               keyExtractor={(item, index) => index.toString()} />
           </View>
-
-          <Button title="Next Round" onPress={handleNextRound} />
-          <Button title="Finish Game" onPress={handleFinishGame} />
+            {round < rounds ? <Button title="Next Round" onPress={handleNextRound} /> : <Button title="Finish Game" onPress={handleFinishGame} />}
+          
           <View >
             {/*
             //

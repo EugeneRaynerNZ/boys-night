@@ -29,6 +29,10 @@ export default class GameLoader {
         pool.logo = PoolIcon;
         pool.description = "Pool scorecard";
         this.games.push(pool);
+
+        /**
+        *   add new games here
+        **/
     }
 
     getAllGames() {

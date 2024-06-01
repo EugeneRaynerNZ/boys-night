@@ -15,7 +15,7 @@ export default function CategoryScreen({ navigation }) {
       alert("Please select a game to continue");
       return
     }
-    navigation.navigate('AddPlayers', { category });
+    navigation.navigate('AddPlayers', { category, rounds:9 });
   }
 
   const GameCard = ({ game })  =>{

@@ -10,13 +10,17 @@ import Player from '../models/PlayerModel';
 export default function AddPlayersScreen({ navigation }) {
 
   const route = useRoute(); // Get the route object from the navigation prop
-  const { category } = route.params;  // Get the category parameter from the route object
+  const { category, rounds } = route.params;  // Get the category parameter from the route object
 
   const [name, setName] = useState('');
   const [players, setPlayers] = useState([]); // This is the list of players that are displayed on the screen
   const [savedPlayers, setSavedPlayers] = useState([]); // This is the list of players that are saved in AsyncStorage
 
-
+  /**
+   *  addNewPlayer() && removePlayer() - these functions are used to add and remove players from the list of saved players
+   *  addToPlayList() && removeFromPlayList() - these functions are used to add and remove players from the list of playing players
+   * 
+   */
 
   const addNewPlayer = async () => {
     // Check if the name is empty
@@ -36,6 +40,7 @@ export default function AddPlayersScreen({ navigation }) {
       await Storage.addData(PLAYERS, newPlayer);
       // await Storage.megerData(PLAYERS, newPlayer);
       console.log("Player has been added: ", newPlayer.name);
+      console.log("Saved player list:  ", savedPlayers)
     } catch (error) {
       console.error('Error saving data - from AddPlayersScreen.addNewPlayer(): ', error);
     }
@@ -49,11 +54,19 @@ export default function AddPlayersScreen({ navigation }) {
   }
 
   const removePlayer = async (player) => {
-    // remove the player from the list of players
-    const newSavedPlayers = savedPlayers.filter(p => p.id !== player.id);
+    // remove the player from the saved list of players
+    const newSavedPlayers = savedPlayers.filter(p => p.id !== player.id); //return all players except the one to be removed
+    // if the newSavedPlayers is empty, remove the key from AsyncStorage
+    if (newSavedPlayers.length === 0) {
+      await Storage.removeData(PLAYERS);
+    }else{
+      // Save the updated list of players to AsyncStorage
+      await Storage.setData(PLAYERS, newSavedPlayers);
+    }
+
     setSavedPlayers(()=>(newSavedPlayers));
     // Save the updated list of players to AsyncStorage
-    await Storage.addData(PLAYERS, newSavedPlayers);
+    // await Storage.setData(PLAYERS, newSavedPlayers);
     // await Storage.megerData(PLAYERS, newSavedPlayers);
     console.log("Player has been removed from list: ", player);
   }
@@ -99,7 +112,7 @@ export default function AddPlayersScreen({ navigation }) {
       return alert('Please add players to start the game');
     }
     // navigate to the AddPlayers screen and pass the category as a parameter
-    navigation.navigate(game, { category, players });
+    navigation.navigate(game, { category, players, rounds });
   }
 
   const clearAllPlayers = async () => {

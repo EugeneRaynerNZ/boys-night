@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRoute } from '@react-navigation/native';
-import { Text, View, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { Text, View, StyleSheet, Button, Image, TouchableOpacity } from 'react-native';
 
 export default function GameOverScreen({ navigation }) {
 
@@ -25,6 +25,9 @@ export default function GameOverScreen({ navigation }) {
             if (totalScore < lowestScore) {
                 lowestScore = totalScore;
                 winner = player.playerName;
+            }else if (totalScore === lowestScore) {
+                //if the scores are equal, the winner is 'null'
+                winner = null;
             }
         });
         setWinner(winner);
@@ -51,7 +54,9 @@ export default function GameOverScreen({ navigation }) {
                     <Text style={styles.columnHeading}>{gameSession.getPlayerTotalScore(player.playerId)}</Text>
                 </View>
             ))}
-                <Text style={styles.columnHeading}>The Winner is {winner}</Text>
+            {winner === null ? <Text style={styles.columnHeading}>It's a tie!</Text> : <Text style={styles.columnHeading}>The Winner is {winner}</Text>}
+            <Button title="Finish" onPress={()=>(navigation.navigate('Category'))} />
+
         </View>
     )
 }

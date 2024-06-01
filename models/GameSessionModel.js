@@ -52,9 +52,7 @@ export default class GameSession {
         // });
 
         //save this game session to AsyncStorage
-        // Storage.setData(GAME_SESSIONS, this);
-
+        // Storage.addData(GAME_SESSIONS, this);
     }
-
     
 }
