@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRoute } from '@react-navigation/native';
 import { Text, View, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
 
 export default function GameOverScreen({ navigation }) {
 
@@ -42,15 +41,14 @@ export default function GameOverScreen({ navigation }) {
     return (
         <View style={styles.bodyContainer}>
             <View style={styles.columnHeadingsContainer}>
-                <Text style={styles.columnHeading}>Player</Text>
-                <Text style={styles.columnHeading}>Score</Text>
+                <Text style={styles.columnHeading}>GameOver!</Text>
             </View>
 
             {playerScoresArray.map((player) => (
                 <View key={player.playerId}>
-                    <Text>{player.playerName}</Text>
-                    <Text>{player.scores.join(', ')}</Text>
-                    <Text>{gameSession.getPlayerTotalScore(player.playerId)}</Text>
+                    <Text style={styles.columnHeading}>{player.playerName}</Text>
+                    <Text style={styles.columnHeading}>{player.scores.join(', ')}</Text>
+                    <Text style={styles.columnHeading}>{gameSession.getPlayerTotalScore(player.playerId)}</Text>
                 </View>
             ))}
                 <Text style={styles.columnHeading}>The Winner is {winner}</Text>
