@@ -1,26 +1,53 @@
-import { Text, View, StyleSheet, Image } from 'react-native'
-import React, { Component } from 'react'
-import GolfIcon from '../assets/golf.png'
-import PoolIcon from '../assets/pool.png'
+import { Text, View, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import HeaderLogo from '../components/HeaderLogo';
+import GameLoader from '../components/games/GameLoader';
 
-export default class CategoryScreen extends Component {
-  render() {
+
+export default function CategoryScreen({ navigation }) {
+
+  const [games, setGames] = useState([]);
+
+  const handleGameSelection = (category) => {
+    // navigate to the AddPlayers screen and pass the category as a parameter
+    if(category === null || category === undefined || category === ""){
+      console.log("category is empty");
+      alert("Please select a game to continue");
+      return
+    }
+    navigation.navigate('AddPlayers', { category, rounds:1 });
+  }
+
+  const GameCard = ({ game })  =>{
     return (
-      <View style={[styles.bodyContainer]}>
-        {/* if we click Golf, we should go to "add players screen" */}
-        <View style={styles.category}>
-          <Image source={GolfIcon} style={styles.categoryImage} />
-          <Text style={styles.categoryText}>Golf</Text>
-        </View>
-        {/* if we click Pool, we should go to "add players screen" */}
-        <View style={styles.category}>
-          <Image source={PoolIcon} style={styles.categoryImage} />
-          <Text style={styles.categoryText}>Pool</Text>
-        </View>
-      </View>
+      <TouchableOpacity onPress={() => handleGameSelection(game.name)} style={styles.category}>
+          <Image source={game.logo} style={styles.categoryImage} />
+          <Text style={styles.categoryText}>{game.name}</Text>
+        </TouchableOpacity>
     )
   }
+
+  const loadGames = () => {
+    const gameLoader = GameLoader.getInstance();
+    const allGames = gameLoader.getAllGames();
+    // gameLoader.addGame({name: "Custom Game", logo: require('../assets/user.png'), description: "Create your own game"});
+    setGames(allGames);
+  }
+
+  useEffect(() => {
+    loadGames();
+  }, []);
+
+
+  return (
+    <View style={[styles.bodyContainer]}>
+
+      <HeaderLogo />
+      {games.length === 0 ? <Text>Loading...</Text> : games.map((game, index) => (<GameCard key={index} game={game} />))}
+    </View>
+  )
 }
+
 
 const styles = StyleSheet.create({
   bodyContainer: {
@@ -29,7 +56,8 @@ const styles = StyleSheet.create({
     display: "flex",
     padding: 20,
     flexWrap: "wrap",
-    flexDirection: "row",
+    flexDirection: "column",
+    width: "100%",
     gap: 16
   },
   category: {
@@ -42,7 +70,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignSelf: 'flex-start',
     padding: 32,
-    rowGap: 16
+    rowGap: 16,
+    width: "100%",
   },
   categoryImage: {
     width: 40,
