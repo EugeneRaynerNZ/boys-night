@@ -66,24 +66,37 @@ export default function GameScreen({ navigation }) {
   const addPlayerScore = () => {
     // Add the roundScores to the gameSession
     roundScores.forEach(playerScore => {
-      gameSession.addPlayerScore(playerScore.playerId, playerScore.score);
+       gameSession.addPlayerScore(playerScore.playerId, playerScore.score);
+      
     });
   }
 
   const handleNextRound = () => {
     console.log("Next Round Called!");
     console.log("Current Player Scores: ", roundScores);
-    // Increment the round number
-    setRound(round + 1);
-    // Add the roundScores to the gameSession
-    addPlayerScore();
-    // Clear the roundScores array
-    setRoundScores([]);
-    //reset the score to 0
-    resetScores();
-    console.log("session Id: ", gameSession.id);
-    console.log("Player Scores: ", gameSession.getAllScores());
-    console.log("----------------------------------------------")
+
+    // check if any score is 0, if so, alert the user
+    let zeroScore = false;
+    roundScores.forEach(playerScore => {
+      if(playerScore.score === 0){
+        zeroScore = true;
+      }
+    });
+    if(zeroScore){
+      alert("Please enter a score for all players");
+    }else{
+      // Increment the round number
+      setRound(round + 1);
+      // Add the roundScores to the gameSession
+      addPlayerScore();
+      // Clear the roundScores array
+      setRoundScores([]);
+      //reset the score to 0
+      resetScores();
+      console.log("session Id: ", gameSession.id);
+      console.log("Player Scores: ", gameSession.getAllScores());
+      console.log("----------------------------------------------")
+    }
   }
 
   const saveData = async () => {
