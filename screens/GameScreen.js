@@ -190,7 +190,8 @@ export default function GameScreen({ navigation }) {
                   <View style={styles.player}>
                     <Text style={styles.playerName}>{item.name}</Text>
                     <Text style={styles.playerScore}>{gameSession.getPlayerScore(item.id).join(', ')}</Text>
-                    <Text style={styles.playerScore}>{gameSession.getPlayerTotalScore(item.id)}</Text>
+                    <Text style={styles.playerScore}>{gameSession.getPlayerScore(item.id).totalScore}</Text>
+                    {/* <Text style={styles.playerScore}>{gameSession.getPlayerTotalScore(item.id)}</Text> */}
 
                   </View>
               }

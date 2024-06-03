@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, Button, Image, TouchableOpacity } from 'react-native';
+import { Text, View, StyleSheet, Button, ScrollView, TouchableOpacity } from 'react-native';
 import Storage, { GAME_SESSIONS } from '../utils/Storage';
 
 export default function HistoryScreen() {
 
     const [gameSessions, setGameSessions] = useState([]);
 
-    const timeFormat = (date)=>{
-        return date.toLocaleString('en-NZ', {hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true});
+    const timeFormat = (timestamp) => {
+        const date = new Date(timestamp);
+        return date.toLocaleString();
     };
 
     const getGameSessions = async () => {
         const sessions = await Storage.getData(GAME_SESSIONS);
-        setGameSessions(()=>(sessions));
+        setGameSessions(() => (sessions));
     }
 
     const clearHistory = async () => {
@@ -24,37 +25,15 @@ export default function HistoryScreen() {
     const handleRefresh = () => {
         getGameSessions();
         console.log("Game Sessions: ", gameSessions);
-        let playerScoresArray = gameSessions[0].playerScore;
-
-        console.log("Player Scores Array: ", playerScoresArray);
     }
 
     useEffect(() => {
         getGameSessions();
-        if(gameSessions===null || gameSessions===undefined || gameSessions.length===0){
+        if (gameSessions === null || gameSessions === undefined || gameSessions.length === 0) {
             console.log("No game sessions found");
-            return; 
-        }else{
-            console.log("Game Sessions: ", gameSessions[0]);
-            console.log("Start Time: ", gameSessions[0].startTime);
-            console.log("Game ID: ", gameSessions[0].gameId);
-            console.log("Game Name: ", gameSessions[0].gameName);
-            console.log("Session ID: ", gameSessions[0].id);
-            console.log("palyers score: ", gameSessions[0].playerScore);
-            console.log("End Time: ", gameSessions[0].endTime);
-            
+        } else {
+            console.log("Game Sessions: ", gameSessions);
             console.log("------------------------------------------------");
-
-            // convert the playerScore map to an array
-            const array = Array.from(gameSessions[0].playerScore);
-            console.log("Player Score Array: ", array);
-            // Array.from(gameSessions[0].playerScore).map(([playerId, playerData]) => (
-            //     console.log("Player ID: ", playerId),
-            //     console.log("Player Name: ", playerData.playerName),
-            //     console.log("Player Scores: ", playerData.score)
-            // ));
-            console.log("------------------------------------------------");
-
         }
     }, []);
 
@@ -62,24 +41,29 @@ export default function HistoryScreen() {
     return (
         <View style={styles.bodyContainer}>
             <View style={styles.container}>
-            <Button title="Clear History" onPress={clearHistory} /> 
-            <Button title="Refresh" onPress={handleRefresh} />
-           <Text style={styles.columnHeading}>HistoryScreen</Text>
-                <View style={styles.columnHeadingsContainer}>
-                    <View style={styles.scoreContainer}>
-                        {gameSessions !== null ? gameSessions.map((session, index) => (
-                            <View key={index} style={styles.player}>
-                                <Text style={styles.playerName}>Game: {session.gameName}</Text>
-                                {session.playerScore.length > 0? session.playerScore.map((player, pIndex)=>(
-                                    <View key={pIndex} style={styles.playersContainer}>
-                                        <Text >Player: {player.playerName}</Text>
-                                        <Text >Score: {player.score.join(', ')}</Text>
+                <Button title="Clear History" onPress={clearHistory} />
+                <Button title="Refresh" onPress={handleRefresh} />
+                <ScrollView>
+                <View style={styles.scoreContainer}>
+                    {gameSessions !== null ? gameSessions.map((session, index) => (
+                        <View key={index} style={styles.player}>
+                            <View style={styles.playersContainer}>
+                                <Text style={styles.columnHeading} >Game: {session.gameName}</Text>
+                                <Text style={styles.columnHeading}>Session ID: {session.id}</Text>
+                                <Text style={styles.columnHeading}>Start Time: {timeFormat(session.startTime)}</Text>
+                                {session.playerScore.map((player, pIndex) => (
+                                    <View key={pIndex} >
+                                        <Text style={styles.columnHeading}>Player{pIndex + 1}: {player.playerName}</Text>
+                                        <Text style={styles.columnHeading}>Score: {player.score.join(', ')}</Text>
+                                        <Text style={styles.columnHeading}>Total Score: {player.totalScore}</Text>
                                     </View>
-                                )) : <Text>null</Text> }
+                                ))}
+                                <Text style={styles.columnHeading}>End Time: {timeFormat(session.endTime)}</Text>
                             </View>
-                        )) : <Text style={styles.columnHeading}>No game sessions found</Text>}
-                    </View>
+                        </View>
+                    )) : <Text style={styles.columnHeading}>No game history found</Text>}
                 </View>
+                </ScrollView>
 
             </View>
         </View>
@@ -107,10 +91,13 @@ const styles = StyleSheet.create({
     columnHeading: {
         color: "white"
     },
-    scoreContainer:{
+    scoreContainer: {
         display: "flex",
         flexDirection: "column",
-        justifyContent: "space-between"
+        justifyContent: "space-between",
+        paddingBottom: 16,
+        marginTop: 16,
+        marginBottom: 48,
     },
     playersContainer: {
         display: "flex",

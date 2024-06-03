@@ -1,53 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { useRoute } from '@react-navigation/native';
-import { Text, View, StyleSheet, Button, Image, TouchableOpacity } from 'react-native';
-import Storage, {GAME_SESSIONS} from '../utils/Storage';
-import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+import { Text, View, StyleSheet, Button } from 'react-native';
 
 export default function GameOverScreen({ navigation }) {
 
     const route = useRoute(); // Get the route object from the navigation prop
     const { gameSession } = route.params;  // Get the category parameter from the route object
-    const [players, setPlayers] = useState(gameSession.playerScore); // This is the list of players that are displayed on the screen
-    let savedSessions;
-    // const players = gameSession.players;
-    const playerScoresArray = Array.from(gameSession.playerScore.entries()).map(([playerId, playerData]) => ({
-        playerId,
-        playerName: playerData.playerName,
-        scores: playerData
-    }));
-
     const [winner, setWinner] = useState('');
 
     const calculateWinner = () => {
         // set the winner to the one who has the lowest score
-        let lowestScore = Number.MAX_VALUE;
-        let winner = '';
-        playerScoresArray.forEach(player => {
-            let totalScore = gameSession.getPlayerTotalScore(player.playerId);
-            if (totalScore < lowestScore) {
-                lowestScore = totalScore;
-                winner = player.playerName;
-            }else if (totalScore === lowestScore) {
-                //if the scores are equal, the winner is 'null'
-                winner = null;
-            }
-        });
-        setWinner(winner);
-    }
-
-    const getStoredGameSessions = async () => {
-        savedSessions = await Storage.getData(GAME_SESSIONS);
-        console.log("saved Sessions: ", savedSessions);
+        const winner = gameSession.getLowestScore();
+        console.log("winner: ", winner);
+        setWinner(()=>(winner.playerName));
     }
     
     useEffect(() => {
         calculateWinner();
-        getStoredGameSessions();
         console.log("Game Over Screen: ");
         console.log("Game Session: ", gameSession);
-        console.log("Players: ", players)
-        console.log("saved Sessions: ", savedSessions);
         console.log("--------------------------------");
     }, [])
 
@@ -57,17 +28,17 @@ export default function GameOverScreen({ navigation }) {
                 <Text style={styles.columnHeading}>GameOver!</Text>
             </View>
 
-            {playerScoresArray.map((player) => (
-                <View key={player.playerId}>
-                    <Text style={styles.columnHeading}>{player.playerName}</Text>
-                    <Text style={styles.columnHeading}>{gameSession.getPlayerScore(player.playerId).join(', ')}</Text>
-                    <Text style={styles.columnHeading}>{gameSession.getPlayerTotalScore(player.playerId)}</Text>
-                </View>
-            ))}
-            {winner === null ? <Text style={styles.columnHeading}>It's a tie!</Text> : <Text style={styles.columnHeading}>The Winner is {winner}</Text>}
+            <View>
+                {gameSession.playerScore.map((player) => (
+                    <View key={player.playerId}>
+                        <Text style={styles.columnHeading}>Player: {player.playerName}</Text>
+                        <Text style={styles.columnHeading}>Round Score: {player.score.join(', ')}</Text>
+                        <Text style={styles.columnHeading}>Total Score: {player.totalScore}</Text>
+                    </View>
+                ))}
+            </View>
+            {winner === 'null' ? <Text style={styles.columnHeading}>It's a tie!</Text> : <Text style={styles.columnHeading}>The Winner is {winner}</Text>}
             <Button title="Finish" onPress={()=>(navigation.navigate('Category'))} />
-            <Button title="refresh" onPress={()=>(getStoredGameSessions)} />
-
         </View>
     )
 }
