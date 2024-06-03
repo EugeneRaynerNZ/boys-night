@@ -29,6 +29,17 @@ export default class GameSession {
     }
 
     //add a player's score for a round
+    // addPlayerScore(playerId, score){
+    //     if(!this.playerScore.has(playerId)){
+    //         this.playerScore.set(playerId, {
+    //             playerName: player.name,
+    //             score:[]
+    //         });
+    //     }
+    //     this.playerScore.get(playerId).score.push(score);
+    // }
+
+    //add a player's score for a round
     addPlayerScore(playerId, score){
         let player = this.playerScore.find(player => player.playerId === playerId);
         player.score.push(score);
