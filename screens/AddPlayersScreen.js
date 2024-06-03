@@ -56,6 +56,14 @@ export default function AddPlayersScreen({ navigation }) {
   const removePlayer = async (player) => {
     // remove the player from the saved list of players
     const newSavedPlayers = savedPlayers.filter(p => p.id !== player.id); //return all players except the one to be removed
+
+    //check if the player already exists in the play list
+    if (players.some(p => p.id === player.id)) {
+      //remove the player from the play list
+      const newPlayers = players.filter(p => p.id !== player.id);
+      setPlayers(()=>(newPlayers));
+    }
+
     // if the newSavedPlayers is empty, remove the key from AsyncStorage
     if (newSavedPlayers.length === 0) {
       await Storage.removeData(PLAYERS);
