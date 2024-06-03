@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, Button, ScrollView, TouchableOpacity } from 'react-native';
+import { Text, View, StyleSheet, Button, ScrollView } from 'react-native';
 import Storage, { GAME_SESSIONS } from '../utils/Storage';
 
 export default function HistoryScreen() {

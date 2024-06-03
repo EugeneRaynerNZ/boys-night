@@ -1,5 +1,5 @@
 import { View, StyleSheet, TextInput, Button, FlatList, Text, Image, TouchableOpacity } from 'react-native'
-import React, { Component, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useRoute } from '@react-navigation/native';
 import Storage, {PLAYERS} from '../utils/Storage';
 import HeaderLogo from '../components/HeaderLogo';
@@ -38,7 +38,6 @@ export default function AddPlayersScreen({ navigation }) {
     try {
       // Save the new player object to AsyncStorage
       await Storage.addData(PLAYERS, newPlayer);
-      // await Storage.megerData(PLAYERS, newPlayer);
       console.log("Player has been added: ", newPlayer.name);
       console.log("Saved player list:  ", savedPlayers)
     } catch (error) {

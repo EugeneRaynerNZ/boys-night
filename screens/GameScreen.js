@@ -1,5 +1,5 @@
 import { View, StyleSheet, TextInput, Button, FlatList, Text, Image } from 'react-native'
-import React, { Component, useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useRoute } from '@react-navigation/native';
 import Storage, { GAME_SESSIONS } from '../utils/Storage';
 import HeaderLogo from '../components/HeaderLogo'
