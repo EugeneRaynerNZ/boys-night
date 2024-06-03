@@ -7,13 +7,22 @@ export default class GameSession {
         this.id = uuidv4(); 
         this.gameId = game.id;
         this.gameName = game.name;
-        this.playerScore = new Map();   //use to store each player's score
+        // this.playerScore = new Map();   //use to store each player's score
+        this.playerScore =[];   //use to store each player's score
         this.startTime = new Date();
         this.endTime = null;
 
         //initialize player's score
+        // players.forEach(player => {
+        //     this.playerScore.set(player.id, {
+        //         playerName: player.name,
+        //         score:[]});
+        // });
+
+        //initialize player's score
         players.forEach(player => {
-            this.playerScore.set(player.id, {
+            this.playerScore.push({
+                playerId: player.id,
                 playerName: player.name,
                 score:[]});
         });
@@ -21,23 +30,34 @@ export default class GameSession {
 
     //add a player's score for a round
     addPlayerScore(playerId, score){
-        if(!this.playerScore.has(playerId)){
-            this.playerScore.set(playerId, {
-                playerName: player.name,
-                score:[]
-            });
-        }
-        this.playerScore.get(playerId).score.push(score);
+        let player = this.playerScore.find(player => player.playerId === playerId);
+        player.score.push(score);
     }
 
     getAllScores(){
         return this.playerScore;
     }
 
+    //get player's score by playerId
+    getPlayerScore(playerId){
+        let player = this.playerScore.find(player => player.playerId === playerId);
+        return player.score;
+    }
+
     //get the sum of all scores for a player
+    // getPlayerTotalScore(playerId){
+    //     let total = 0;
+    //     this.playerScore.get(playerId).score.forEach(score => {
+    //         total += score;
+    //     });
+    //     return total;
+    // }
+
+    //get the sum of scores for a player
     getPlayerTotalScore(playerId){
         let total = 0;
-        this.playerScore.get(playerId).score.forEach(score => {
+        let player = this.playerScore.find(player => player.playerId === playerId);
+        player.score.forEach(score => {
             total += score;
         });
         return total;

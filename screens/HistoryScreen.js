@@ -24,6 +24,9 @@ export default function HistoryScreen() {
     const handleRefresh = () => {
         getGameSessions();
         console.log("Game Sessions: ", gameSessions);
+        let playerScoresArray = gameSessions[0].playerScore;
+
+        console.log("Player Scores Array: ", playerScoresArray);
     }
 
     useEffect(() => {
@@ -63,23 +66,19 @@ export default function HistoryScreen() {
             <Button title="Refresh" onPress={handleRefresh} />
            <Text style={styles.columnHeading}>HistoryScreen</Text>
                 <View style={styles.columnHeadingsContainer}>
-                    {/* {gameSessions===null || gameSessions===undefined || gameSessions.length===0 ? <Text style={styles.columnHeading}>No game sessions found</Text> : <Text style={styles.columnHeading}>Game Sessions: </Text>} */}
-                <View style={styles.scoreContainer}>
-                     {gameSessions !== null ? gameSessions.map((session, index) => (
-                          <View key={index} style={styles.player}>
-                            <Text style={styles.playerName}>Game: {session.gameName}</Text>
-                            {/* <Text style={styles.playerName}>Start: {timeFormat(session.startTime)}</Text> */}
-                            {/* <Text style={styles.playerName}>End: {session.endTime}</Text> */}
-                            <Text style={styles.playerName}>Session ID: {session.id}</Text>
-                            {/* {Array.from(session.playerScore.entries()).map(([playerId, playerData]) => (
-                                <View key={playerId}>
-                                    <Text style={styles.playerName}>Player: {playerData.playerName}</Text>
-                                    <Text style={styles.playerName}>Scores: {playerData.score.join(', ')}</Text>
-                                </View>
-                            ))} */}
-                          </View>
-                     )) : <Text style={styles.columnHeading}>No game sessions found</Text>}
-                </View>
+                    <View style={styles.scoreContainer}>
+                        {gameSessions !== null ? gameSessions.map((session, index) => (
+                            <View key={index} style={styles.player}>
+                                <Text style={styles.playerName}>Game: {session.gameName}</Text>
+                                {session.playerScore.length > 0? session.playerScore.map((player, pIndex)=>(
+                                    <View key={pIndex} style={styles.playersContainer}>
+                                        <Text >Player: {player.playerName}</Text>
+                                        <Text >Score: {player.score.join(', ')}</Text>
+                                    </View>
+                                )) : <Text>null</Text> }
+                            </View>
+                        )) : <Text style={styles.columnHeading}>No game sessions found</Text>}
+                    </View>
                 </View>
 
             </View>

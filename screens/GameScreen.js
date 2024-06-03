@@ -38,25 +38,25 @@ export default function GameScreen({ navigation }) {
         // If the player does not have a score, add the score
         return [
           ...prevRoundScores,
-          { playerId, score }
+          { playerId,playerName, score }
         ];
       }
     });
 
-
     // Update the player's score
-    setRoundScores((prevroundScores) => {
-      const newRoundScores = prevroundScores.map(playerScore => {
-        if (playerScore.playerId === playerId) {
-          return {
-            playerId,
-            score
-          }
-        }
-        return playerScore;
-      });
-      return newRoundScores;
-    });
+    // setRoundScores((prevroundScores) => {
+    //   const newRoundScores = prevroundScores.map(playerScore => {
+    //     if (playerScore.playerId === playerId) {
+    //       return {
+    //         playerId,
+    //         playerName,
+    //         score
+    //       }
+    //     }
+    //     return playerScore;
+    //   });
+    //   return newRoundScores;
+    // });
 
 
     console.log("Player Scores: ", roundScores);
@@ -124,8 +124,6 @@ export default function GameScreen({ navigation }) {
     navigation.navigate('GameOver', { gameSession });
   }
 
-
-
   const resetScores = () => {
     //initialize the player scores to 0
     players.forEach(player => {
@@ -133,6 +131,7 @@ export default function GameScreen({ navigation }) {
         ...prevroundScores,
         {
           playerId: player.id,
+          playerName: player.name,
           score: 0
         }
       ]);
@@ -190,7 +189,7 @@ export default function GameScreen({ navigation }) {
                 ({ item }) =>
                   <View style={styles.player}>
                     <Text style={styles.playerName}>{item.name}</Text>
-                    <Text style={styles.playerScore}>{gameSession.playerScore.get(item.id).score}</Text>
+                    <Text style={styles.playerScore}>{gameSession.getPlayerScore(item.id).join(', ')}</Text>
                     <Text style={styles.playerScore}>{gameSession.getPlayerTotalScore(item.id)}</Text>
 
                   </View>

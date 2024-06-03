@@ -14,7 +14,7 @@ export default function GameOverScreen({ navigation }) {
     const playerScoresArray = Array.from(gameSession.playerScore.entries()).map(([playerId, playerData]) => ({
         playerId,
         playerName: playerData.playerName,
-        scores: playerData.score
+        scores: playerData
     }));
 
     const [winner, setWinner] = useState('');
@@ -60,7 +60,7 @@ export default function GameOverScreen({ navigation }) {
             {playerScoresArray.map((player) => (
                 <View key={player.playerId}>
                     <Text style={styles.columnHeading}>{player.playerName}</Text>
-                    <Text style={styles.columnHeading}>{player.scores.join(', ')}</Text>
+                    <Text style={styles.columnHeading}>{gameSession.getPlayerScore(player.playerId).join(', ')}</Text>
                     <Text style={styles.columnHeading}>{gameSession.getPlayerTotalScore(player.playerId)}</Text>
                 </View>
             ))}
