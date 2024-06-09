@@ -1,12 +1,12 @@
 import { View, StyleSheet, Image } from 'react-native'
 import React from 'react'
-import LoginLogo from '../assets/login-logo2.png'
+import Logo from '../assets/logo.png'
 
 export default function HeaderLogo() {
 
     return (
         <View style={styles.header}>
-            <Image source={LoginLogo} style={styles.headerImage} />
+            <Image source={Logo} style={styles.headerImage} />
         </View>
     )
   }

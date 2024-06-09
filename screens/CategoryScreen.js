@@ -1,4 +1,5 @@
 import { Text, View, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import {Dimensions} from 'react-native';
 import React, { useEffect, useState } from 'react';
 import HeaderLogo from '../components/HeaderLogo';
 import GameLoader from '../components/games/GameLoader';
@@ -21,7 +22,6 @@ export default function CategoryScreen({ navigation }) {
   const GameCard = ({ game })  =>{
     return (
       <TouchableOpacity onPress={() => handleGameSelection(game.name)} style={styles.category}>
-          <Image source={game.logo} style={styles.categoryImage} />
           <Text style={styles.categoryText}>{game.name}</Text>
         </TouchableOpacity>
     )
@@ -43,7 +43,20 @@ export default function CategoryScreen({ navigation }) {
     <View style={[styles.bodyContainer]}>
 
       <HeaderLogo />
-      {games.length === 0 ? <Text>Loading...</Text> : games.map((game, index) => (<GameCard key={index} game={game} />))}
+      <Text style={styles.whiteText}>What are we playing tonight?</Text>
+      <View>
+        <Text style={styles.categoryTitle}>Golf</Text>
+        {/* Add another class "categorySelected" to GameCard when game is selected */}
+        {/* separate categories from one another - golf as one. Pool as another */}
+        <View style={styles.catergoryContainer}>{games.length === 0 ? <Text style={styles.whiteText}>Loading...</Text> : games.map((game, index) => (<GameCard key={index} game={game} />))}</View>
+      </View>
+
+      {/* don't show this button until you click the above item to select it. */}
+      <TouchableOpacity 
+        style={styles.primaryButton}>
+        <Text style={styles.primaryButtonText}>Select Players</Text>
+      </TouchableOpacity>
+      
     </View>
   )
 }
@@ -51,34 +64,52 @@ export default function CategoryScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   bodyContainer: {
-    backgroundColor: '#474747',
+    backgroundColor: '#060B43',
     flex: 1,
     display: "flex",
     padding: 20,
+    gap: 48
+  }, 
+  whiteText: {
+    color: "white",
+  },
+  categoryTitle: {
+    fontSize: 20,
+    color: "white"
+  },
+  catergoryContainer: {
+    display: "flex",
+    flexDirection: "row",
     flexWrap: "wrap",
-    flexDirection: "column",
-    width: "100%",
-    gap: 16
+    justifyContent: 'space-between',
   },
   category: {
-    flexGrow: 1,
-    flexShrink: 0,
-    flexBasis: 100,
-    backgroundColor: '#555555',
+    backgroundColor: "#1E2355",
     display: "flex",
-    alignItems: "center",
     justifyContent: "center",
-    alignSelf: 'flex-start',
-    padding: 32,
-    rowGap: 16,
-    width: "100%",
+    paddingVertical: 16,
+    borderRadius: 8,
+    flexBasis: '48%', // Slightly less than 50% to account for margin
+    margin: '1%',
   },
-  categoryImage: {
-    width: 40,
-    height: 40
+  categorySelected: {
+    background: "#0E34A0",
+    border: "1px solid #A39D9D"
   },
   categoryText: {
-    fontSize: 24,
-    color: "white"
-  }
+    fontSize: 16,
+    color: "white",
+    textAlign: "center"
+  },
+  primaryButton: {
+    borderRadius: 36,
+    backgroundColor: "#0E34A0",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
+  primaryButtonText: {
+    color: "white",
+    textAlign: "center",
+    fontSize: 16,
+  },
 });

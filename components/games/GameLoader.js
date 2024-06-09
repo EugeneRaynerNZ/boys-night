@@ -1,6 +1,4 @@
 import Game from '../../models/GameModel';
-import GolfIcon from '../../assets/golf.png';
-import PoolIcon from '../../assets/pool.png';
 
 export default class GameLoader {
 
@@ -19,14 +17,17 @@ export default class GameLoader {
     createDefaultGames() {
         this.games = [];
         //new game
-        const golf = new Game("Golf");
-        golf.logo = GolfIcon;
-        golf.description = "Golf scorecard";
-        this.games.push(golf);
+        const golf9 = new Game("9 Hole");
+        golf9.description = "Golf scorecard";
+        this.games.push(golf9);
+
+        //new game
+        const golf18 = new Game("18 Hole");
+        golf18.description = "Golf scorecard";
+        this.games.push(golf18);
 
         //new game
         const pool = new Game("Pool");
-        pool.logo = PoolIcon;
         pool.description = "Pool scorecard";
         this.games.push(pool);
 
