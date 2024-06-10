@@ -1,4 +1,4 @@
-import { View, StyleSheet, TextInput, Button, FlatList, Text, Image } from 'react-native'
+import { View, StyleSheet, TextInput, Button, FlatList, Text, Image, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useRoute } from '@react-navigation/native';
 import Storage, { GAME_SESSIONS } from '../utils/Storage';
@@ -144,15 +144,16 @@ export default function GameScreen({ navigation }) {
   return (
     <View style={styles.bodyContainer}>
       <View style={styles.container}>
-      <HeaderLogo />
+        
+        <HeaderLogo />
 
         <View style={styles.columnHeadingsContainer}>
           <Text style={styles.columnHeading}>{category} Round {round}</Text>
-          <Text style={styles.columnHeading}>Score:</Text>
+          {/* <Text style={styles.columnHeading}>Score:</Text> */}
         </View>
 
         <View style={styles.playersContainer}>
-          <View style={styles.player}>
+          <View>
             {/* this is where people can input their score */}
             <FlatList
               data={players}
@@ -171,18 +172,21 @@ export default function GameScreen({ navigation }) {
                     />
                   </View>
               }
-              keyExtractor={(item, index) => index.toString()} />
+            keyExtractor={(item, index) => index.toString()} />
           </View>
-            {round < rounds ? <Button title="Next Round" onPress={handleNextRound} /> : <Button style={styles.finishButton} title="Finish Game" onPress={handleFinishGame} />}
+
+          {/* This button should never exist. The "next" button in the textInput should move the focus to the next score. When there are no more scores to enter, the "done" button on the final input should move to the next hole. */}
+          {round < rounds ? 
+            <TouchableOpacity style={styles.primaryButton} onPress={handleNextRound}>
+              <Text style={styles.primaryButtonText}>Next Round</Text>
+            </TouchableOpacity>
+            :
+            <TouchableOpacity style={styles.primaryButton} onPress={handleFinishGame}>
+              <Text style={styles.primaryButtonText}>Finish Game</Text>
+            </TouchableOpacity>
+          }
           
-          <View >
-            {/*
-            //
-            // this block is where the scores will be printed out
-            // for test only
-            // should be removed while UI/UX is being designed
-            //
-            */}
+          {/* <View>
             <FlatList
               data={players}
               renderItem={
@@ -191,12 +195,10 @@ export default function GameScreen({ navigation }) {
                     <Text style={styles.playerName}>{item.name}</Text>
                     <Text style={styles.playerScore}>{gameSession.getPlayerScore(item.id).join(', ')}</Text>
                     <Text style={styles.playerScore}>{gameSession.getPlayerScore(item.id).totalScore}</Text>
-                    {/* <Text style={styles.playerScore}>{gameSession.getPlayerTotalScore(item.id)}</Text> */}
-
                   </View>
               }
               keyExtractor={(item, index) => index.toString()} />
-          </View>
+          </View> */}
         </View>
 
       </View>
@@ -206,7 +208,7 @@ export default function GameScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   bodyContainer: {
-    backgroundColor: '#474747',
+    backgroundColor: '#060B43',
     flex: 1,
     display: "flex",
     padding: 20,
@@ -220,34 +222,51 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   columnHeadingsContainer: {
-
+    marginBottom: 16
   },
   columnHeading: {
     color: "white"
   },
   playersContainer: {
     display: "flex",
-    rowGap: 16
+    marginBottom: 8
   },
   player: {
     display: "flex",
     justifyContent: "space-between",
+    alignItems: "center",
     flexDirection: "row",
     borderRadius: 8,
-    borderStyle: "solid",
-    borderWidth: 1,
-    borderColor: "red",
-    padding: 8,
+    backgroundColor: "#2F3061",
+    marginBottom: 8,
+    overflow: 'hidden',
   },
   playerName: {
     color: "white",
-    flex: 3
+    flex: 3,
+    marginLeft: 16,
+    paddingVertical: 16
   },
   playerScore: {
-    backgroundColor: "#848484",
-    flex: 1
+    backgroundColor: "#1E2355",
+    flex: 1,
+    height: "100%",
+    color: "#9099EC",
+    fontSize: 32,
+    textAlign: "center"
   },
   finishButton:{
-    color:"black",
-  }
+    color: "black",
+  },
+  primaryButton: {
+    borderRadius: 36,
+    backgroundColor: "#0E34A0",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
+  primaryButtonText: {
+    color: "white",
+    textAlign: "center",
+    fontSize: 16,
+  },
 });

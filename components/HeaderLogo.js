@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
         paddingBottom: 16
     },
     headerImage: {
-        width: 201,
-        height: 39
+        width: 200,
+        height: 43
     },
 });

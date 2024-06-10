@@ -1,18 +1,23 @@
 import { View, StyleSheet, TextInput, Button, FlatList, Text, Image, TouchableOpacity } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { useRoute } from '@react-navigation/native';
 import Storage, {PLAYERS} from '../utils/Storage';
 import HeaderLogo from '../components/HeaderLogo';
-import PlayerIcon from '../assets/user.png';
 import TrashIcon from '../assets/trash.png';
 import Player from '../models/PlayerModel';
+import { ScrollView } from 'react-native-gesture-handler';
 
 export default function AddPlayersScreen({ navigation }) {
 
   const route = useRoute(); // Get the route object from the navigation prop
   const { category, rounds } = route.params;  // Get the category parameter from the route object
+  const [isVisible, setIsVisible] = useState(false);
 
   const [name, setName] = useState('');
+
+  const textInputRef = useRef(null);
+
+  // add default players
   const [players, setPlayers] = useState([]); // This is the list of players that are displayed on the screen
   const [savedPlayers, setSavedPlayers] = useState([]); // This is the list of players that are saved in AsyncStorage
 
@@ -22,12 +27,16 @@ export default function AddPlayersScreen({ navigation }) {
    * 
    */
 
+  
+
+  // need to change this to be on the "next" button that exists on the keypad as per designs
   const addNewPlayer = async () => {
     // Check if the name is empty
     if (name === '') {
       return alert('Please enter a name');
     }
 
+    // this should not exist. The list should remove the players that exist in the current game
     if(savedPlayers.some(p => p.name === name)){
       return alert('Player already exists');
     }
@@ -50,6 +59,7 @@ export default function AddPlayersScreen({ navigation }) {
     setSavedPlayers(()=>(updatedPlayers));
     // Clear the input field
     setName('');
+    setIsVisible(false);
   }
 
   const removePlayer = async (player) => {
@@ -113,6 +123,17 @@ export default function AddPlayersScreen({ navigation }) {
     }
   };
 
+  useEffect(() => {
+    if (isVisible && textInputRef.current) {
+      textInputRef.current.focus();
+    }
+  }, [isVisible]);
+
+  const handleButtonPress = () => {
+    setIsVisible(true);
+    
+  };
+
   const handleGameStart = (game) => {
     //check if player list is empty
     if (players.length === 0) {
@@ -138,127 +159,131 @@ export default function AddPlayersScreen({ navigation }) {
   return (
     <View style={[styles.bodyContainer]}>
 
-      <View style={styles.container}>
-        <View>
-          <HeaderLogo />
-        </View>
-        <View style={styles.listContainer}>
-          <Text style={{ color: "white" }}>Players for {category}</Text>
-          <FlatList
-            data={players}
-            renderItem={
-              ({ item }) =>
-                <View style={styles.playerContainer}>
-                  <View style={styles.player}>
-                    <Image source={PlayerIcon} style={styles.playerIcon} />
-                    <Text style={styles.playerText}>{item.name}</Text>
-                  </View>
-                  {/* This button needs an onclick which removes the player from the list of players */}
-                  <TouchableOpacity onPress={() => removeFromPlayList(item.name)}>
-                    <Image source={TrashIcon} style={styles.trashIcon} />
-                  </TouchableOpacity>
-                </View>
-            }
-            keyExtractor={(item, index) => index.toString()} />
-        </View>
+      <View>
+        <HeaderLogo />
+      </View>
 
-        {/* When we click this button, the text input should appear and be focussed so that the user can already enter in the new name which will go into the input. The user can then click "add player now" */}
-        <View style={styles.addAnotherPlayer}>
-          {/* <Button title="Add another player" /> */}
+      <ScrollView style={{width: "100%"}}>
+        <View style={styles.container}>
 
-          <TextInput
-            placeholder="Enter a name"
-            value={name}
-            style={{
-              borderStyle: "solid",
-              borderWidth: 1,
-              borderColor: "red",
-              padding: 8,
-            }}
-            onChangeText={(text) => setName(text)} />
+        
 
-          <Button title="Add New Player" onPress={addNewPlayer} />
-        </View>
-
-
-        {/* This is the list of saved players. When we click on a player, they should be added to the list of players */}
-        <View style={styles.listContainer}>
-          <Text style={{ color: "white" }}>Saved Players</Text>
-          <FlatList
-            data={savedPlayers}
-            renderItem={
-              ({ item }) =>
-                <TouchableOpacity onPress={() => addToPlayList(item)}>
+          <View style={styles.listContainer}>
+            <Text style={{ color: "white" }}>Players for {category}</Text>
+            <FlatList
+              data={players}
+              renderItem={
+                ({ item }) =>
                   <View style={styles.playerContainer}>
                     <View style={styles.player}>
-                      <Image source={PlayerIcon} style={styles.playerIcon} />
-                      {/* <Text style={styles.playerText}>{item.id}</Text> */}
                       <Text style={styles.playerText}>{item.name}</Text>
-
                     </View>
                     {/* This button needs an onclick which removes the player from the list of players */}
-                    <TouchableOpacity onPress={() => removePlayer(item)}>
+                    <TouchableOpacity onPress={() => removeFromPlayList(item.name)}>
                       <Image source={TrashIcon} style={styles.trashIcon} />
                     </TouchableOpacity>
                   </View>
-                </TouchableOpacity>
-            }
-            keyExtractor={(item, index) => index.toString()} />
+              }
+              keyExtractor={(item, index) => index.toString()} />
+          </View>
+          
+
+          {/* We need to remove the player from saved players when that player exists in the player list */}
+          <View style={styles.listContainer}>
+            <Text style={{ color: "white" }}>Saved Players</Text>
+            <FlatList
+              data={savedPlayers}
+              renderItem={
+                ({ item }) =>
+                  <TouchableOpacity onPress={() => addToPlayList(item)}>
+                    <View style={styles.playerContainer}>
+                      <View style={styles.player}>
+                        
+                        <Text style={styles.playerText}>{item.name}</Text>
+
+                      </View>
+                      
+                      <TouchableOpacity onPress={() => removePlayer(item)}>
+                        <Image source={TrashIcon} style={styles.trashIcon} />
+                      </TouchableOpacity>
+                    </View>
+                  </TouchableOpacity>
+              }
+              keyExtractor={(item, index) => index.toString()} />
+          </View>
+
+          <View style={styles.addAnotherPlayer}>
+
+            {isVisible && (
+            <TextInput
+              placeholder="Enter a name"
+              value={name}
+              style={styles.playerContainer}
+              placeholderTextColor="white"
+              ref={textInputRef}
+              onChangeText={(text) => setName(text)}
+              onSubmitEditing={addNewPlayer} />
+            )}
+
+            {!isVisible && (
+              <TouchableOpacity style={styles.primaryButton} onPress={handleButtonPress}>
+                <Text style={styles.primaryButtonText}>Save a new player</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+
+
         </View>
+      </ScrollView>
 
-
+      <View>
+        <TouchableOpacity style={styles.primaryButton} onPress={() => handleGameStart('Game')} >
+          <Text style={styles.primaryButtonText}>Start Game</Text>
+        </TouchableOpacity>
       </View>
-
-      {/* this button should navigate to the "GameScreen" */}
-      <Button title="Start the game" onPress={() => handleGameStart('Game')} />
-      <Button title="clear saved players" onPress={() => clearAllPlayers()} />
-
     </View>
   )
 }
 
 const styles = StyleSheet.create({
   bodyContainer: {
-    backgroundColor: '#474747',
+    backgroundColor: '#060B43',
     flex: 1,
     display: "flex",
     padding: 20,
     flexWrap: "wrap",
     flexDirection: "column",
-    gap: 16
+    gap: 16,
+    overflowY: "scroll"
   },
   container: {
     display: "flex",
     flexDirection: "column",
     width: "100%",
+    flex: 1,
+    gap: 16
   },
   listContainer: {
     display: "flex",
-    // flexGrow: 1,
+    gap: 16,
     width: "100%",
-    padding: 16,
-    borderStyle: "solid",
-    borderWidth: 1,
-    borderColor: "red",
   },
   playerContainer: {
     display: "flex",
     flexDirection: "row",
-    columnGap: 8,
-    backgroundColor: "#555555",
+    gap: 8,
+    backgroundColor: "#2F3061",
     padding: 16,
     justifyContent: "space-between",
-    marginTop: 16
+    borderRadius: 8,
+    color: "white",
+    marginBottom: 8
   },
   player: {
     display: "flex",
     flexDirection: "row",
     flexGrow: 1,
     columnGap: 16
-  },
-  playerIcon: {
-    width: 24,
-    height: 24
   },
   playerText: {
     color: "white"
@@ -268,6 +293,18 @@ const styles = StyleSheet.create({
     height: 24
   },
   addAnotherPlayer: {
-    paddingTop: 16
+    display: "flex",
+    gap: 16
+  },
+  primaryButton: {
+    borderRadius: 36,
+    backgroundColor: "#0E34A0",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
+  primaryButtonText: {
+    color: "white",
+    textAlign: "center",
+    fontSize: 16,
   },
 });

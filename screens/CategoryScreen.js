@@ -43,12 +43,14 @@ export default function CategoryScreen({ navigation }) {
     <View style={[styles.bodyContainer]}>
 
       <HeaderLogo />
-      <Text style={styles.whiteText}>What are we playing tonight?</Text>
-      <View>
-        <Text style={styles.categoryTitle}>Golf</Text>
-        {/* Add another class "categorySelected" to GameCard when game is selected */}
-        {/* separate categories from one another - golf as one. Pool as another */}
-        <View style={styles.catergoryContainer}>{games.length === 0 ? <Text style={styles.whiteText}>Loading...</Text> : games.map((game, index) => (<GameCard key={index} game={game} />))}</View>
+      <View style={styles.categoriesContainer}>
+        <Text style={styles.whiteText}>What are we playing tonight?</Text>
+        <View>
+          <Text style={styles.categoryTitle}>Golf</Text>
+          {/* Add another class "categorySelected" to GameCard when game is selected */}
+          {/* separate categories from one another - golf as one. Pool as another */}
+          <View style={styles.catergoryContainer}>{games.length === 0 ? <Text style={styles.whiteText}>Loading...</Text> : games.map((game, index) => (<GameCard key={index} game={game} />))}</View>
+        </View>
       </View>
 
       {/* don't show this button until you click the above item to select it. */}
@@ -72,6 +74,12 @@ const styles = StyleSheet.create({
   }, 
   whiteText: {
     color: "white",
+  },
+  categoriesContainer: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 16,
+    flex: 1
   },
   categoryTitle: {
     fontSize: 20,

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRoute } from '@react-navigation/native';
-import { Text, View, StyleSheet, Button } from 'react-native';
+import { Text, View, StyleSheet, Button, TouchableOpacity } from 'react-native';
 
 export default function GameOverScreen({ navigation }) {
 
@@ -38,14 +38,17 @@ export default function GameOverScreen({ navigation }) {
                 ))}
             </View>
             {winner === 'null' ? <Text style={styles.columnHeading}>It's a tie!</Text> : <Text style={styles.columnHeading}>The Winner is {winner}</Text>}
-            <Button title="Finish" onPress={()=>(navigation.navigate('Category'))} />
+
+            <TouchableOpacity style={styles.primaryButton} onPress={()=>(navigation.navigate('Category'))}>
+              <Text style={styles.primaryButtonText}>Go Home</Text>
+            </TouchableOpacity>
         </View>
     )
 }
 
 const styles = StyleSheet.create({
     bodyContainer: {
-        backgroundColor: '#474747',
+        backgroundColor: '#060B43',
         flex: 1,
         display: "flex",
         padding: 20,
@@ -85,5 +88,16 @@ const styles = StyleSheet.create({
     playerScore: {
         backgroundColor: "#848484",
         flex: 1
+    },
+    primaryButton: {
+        borderRadius: 36,
+        backgroundColor: "#0E34A0",
+        paddingVertical: 12,
+        paddingHorizontal: 16,
+    },
+    primaryButtonText: {
+        color: "white",
+        textAlign: "center",
+        fontSize: 16,
     },
 });

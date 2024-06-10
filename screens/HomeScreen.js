@@ -7,7 +7,7 @@ function Home ({navigation}) {
     <View style={styles.bodyContainer}>
 
       <View style={styles.title}>
-       <Image source={Logo} />
+       <Image source={Logo} style={styles.logo} />
       </View>
 
       {/* this button should navigate to a new screen where you can choose a category. design as per below */}
@@ -40,6 +40,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     textAlign: "center",
+    width: "100%"
+  },
+  logo: {
     width: 284,
   },
   buttons: {
@@ -57,9 +60,6 @@ const styles = StyleSheet.create({
     color: "white",
     textAlign: "center",
     fontSize: 16,
-  },
-  red: {
-    color: 'red',
   },
 });
 
