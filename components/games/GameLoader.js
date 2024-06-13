@@ -18,11 +18,13 @@ export default class GameLoader {
         this.games = [];
         //new game
         const golf9 = new Game("9 Hole");
+        golf9.rounds = 9;
         golf9.description = "Golf scorecard";
         this.games.push(golf9);
 
         //new game
         const golf18 = new Game("18 Hole");
+        golf18.rounds = 18;
         golf18.description = "Golf scorecard";
         this.games.push(golf18);
 

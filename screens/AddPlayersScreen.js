@@ -37,9 +37,9 @@ export default function AddPlayersScreen({ navigation }) {
     }
 
     // this should not exist. The list should remove the players that exist in the current game
-    if(savedPlayers.some(p => p.name === name)){
-      return alert('Player already exists');
-    }
+    // if(savedPlayers.some(p => p.name === name)){
+    //   return alert('Player already exists');
+    // }
 
     // Create a new player object
     const newPlayer = new Player(name);
@@ -96,14 +96,24 @@ export default function AddPlayersScreen({ navigation }) {
 
     // add the player to the list of players
     setPlayers([...players, player]);
-    console.log("Player has been added to play list: ", player.name);
+
+    // remove the player from the saved list of players
+    const newSavedPlayers = savedPlayers.filter(p => p.id !== player.id); //return all players except the one to be removed
+    setSavedPlayers(()=>(newSavedPlayers));
   }
 
-  const removeFromPlayList = (name) => {
-    // remove the player from the list of players
-    const newPlayers = players.filter(player => player.name !== name);
-    setPlayers(newPlayers);
-    console.log("Player has been removed from play list: ", name);
+  const removeFromPlayList = (id) => {
+    // find the player in play list
+    const player = players.find(player => player.id === id);
+
+    //remove the player form the play list
+    const newPlayers = players.filter(player => player.id !== id);
+    setPlayers(()=>(newPlayers));
+
+    // add back the player to the saved list of players
+    setSavedPlayers([...savedPlayers, player]);
+
+    console.log("Player has been removed from play list: ", id);
   }
 
   const retrieveData = async () => {
@@ -179,7 +189,7 @@ export default function AddPlayersScreen({ navigation }) {
                       <Text style={styles.playerText}>{item.name}</Text>
                     </View>
                     {/* This button needs an onclick which removes the player from the list of players */}
-                    <TouchableOpacity onPress={() => removeFromPlayList(item.name)}>
+                    <TouchableOpacity onPress={() => removeFromPlayList(item.id)}>
                       <Image source={TrashIcon} style={styles.trashIcon} />
                     </TouchableOpacity>
                   </View>

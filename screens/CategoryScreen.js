@@ -9,19 +9,19 @@ export default function CategoryScreen({ navigation }) {
 
   const [games, setGames] = useState([]);
 
-  const handleGameSelection = (category) => {
+  const handleGameSelection = (category, rounds) => {
     // navigate to the AddPlayers screen and pass the category as a parameter
     if(category === null || category === undefined || category === ""){
       console.log("category is empty");
       alert("Please select a game to continue");
       return
     }
-    navigation.navigate('AddPlayers', { category, rounds:1 });
+    navigation.navigate('AddPlayers', { category, rounds:rounds });
   }
 
   const GameCard = ({ game })  =>{
     return (
-      <TouchableOpacity onPress={() => handleGameSelection(game.name)} style={styles.category}>
+      <TouchableOpacity onPress={() => handleGameSelection(game.name, game.rounds)} style={styles.category}>
           <Text style={styles.categoryText}>{game.name}</Text>
         </TouchableOpacity>
     )
