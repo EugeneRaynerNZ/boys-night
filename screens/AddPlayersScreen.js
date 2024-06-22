@@ -1,7 +1,7 @@
-import { View, StyleSheet, TextInput, Button, FlatList, Text, Image, TouchableOpacity } from 'react-native'
+import { View, StyleSheet, SectionList, TextInput, Button, FlatList, Text, Image, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState, useRef } from 'react'
 import { useRoute } from '@react-navigation/native';
-import Storage, {PLAYERS} from '../utils/Storage';
+import Storage, { PLAYERS } from '../utils/Storage';
 import HeaderLogo from '../components/HeaderLogo';
 import TrashIcon from '../assets/trash.png';
 import Player from '../models/PlayerModel';
@@ -27,7 +27,7 @@ export default function AddPlayersScreen({ navigation }) {
    * 
    */
 
-  
+
 
   // need to change this to be on the "next" button that exists on the keypad as per designs
   const addNewPlayer = async () => {
@@ -43,7 +43,7 @@ export default function AddPlayersScreen({ navigation }) {
 
     // Create a new player object
     const newPlayer = new Player(name);
-    
+
     try {
       // Save the new player object to AsyncStorage
       await Storage.addData(PLAYERS, newPlayer);
@@ -56,7 +56,7 @@ export default function AddPlayersScreen({ navigation }) {
     // Add the new player object to the list of saved players state
     const updatedPlayers = [...savedPlayers, newPlayer];
     // Add the new player object to the players state
-    setSavedPlayers(()=>(updatedPlayers));
+    setSavedPlayers(() => (updatedPlayers));
     // Clear the input field
     setName('');
     setIsVisible(false);
@@ -70,18 +70,18 @@ export default function AddPlayersScreen({ navigation }) {
     if (players.some(p => p.id === player.id)) {
       //remove the player from the play list
       const newPlayers = players.filter(p => p.id !== player.id);
-      setPlayers(()=>(newPlayers));
+      setPlayers(() => (newPlayers));
     }
 
     // if the newSavedPlayers is empty, remove the key from AsyncStorage
     if (newSavedPlayers.length === 0) {
       await Storage.removeData(PLAYERS);
-    }else{
+    } else {
       // Save the updated list of players to AsyncStorage
       await Storage.setData(PLAYERS, newSavedPlayers);
     }
 
-    setSavedPlayers(()=>(newSavedPlayers));
+    setSavedPlayers(() => (newSavedPlayers));
     // Save the updated list of players to AsyncStorage
     // await Storage.setData(PLAYERS, newSavedPlayers);
     // await Storage.megerData(PLAYERS, newSavedPlayers);
@@ -99,7 +99,7 @@ export default function AddPlayersScreen({ navigation }) {
 
     // remove the player from the saved list of players
     const newSavedPlayers = savedPlayers.filter(p => p.id !== player.id); //return all players except the one to be removed
-    setSavedPlayers(()=>(newSavedPlayers));
+    setSavedPlayers(() => (newSavedPlayers));
   }
 
   const removeFromPlayList = (id) => {
@@ -108,7 +108,7 @@ export default function AddPlayersScreen({ navigation }) {
 
     //remove the player form the play list
     const newPlayers = players.filter(player => player.id !== id);
-    setPlayers(()=>(newPlayers));
+    setPlayers(() => (newPlayers));
 
     // add back the player to the saved list of players
     setSavedPlayers([...savedPlayers, player]);
@@ -123,7 +123,7 @@ export default function AddPlayersScreen({ navigation }) {
       const newSvaedPlayers = await Storage.getData(PLAYERS);
       if (newSvaedPlayers !== null && newSvaedPlayers !== undefined) {
         // Parse retrieved data and set it in state
-        setSavedPlayers(()=>(newSvaedPlayers));
+        setSavedPlayers(() => (newSvaedPlayers));
         console.log('Data retrieved: ', newSvaedPlayers);
       } else {
         console.log('No data found');
@@ -141,7 +141,7 @@ export default function AddPlayersScreen({ navigation }) {
 
   const handleButtonPress = () => {
     setIsVisible(true);
-    
+
   };
 
   const handleGameStart = (game) => {
@@ -166,6 +166,49 @@ export default function AddPlayersScreen({ navigation }) {
     retrieveData();
   }, []);
 
+
+  const sections = [
+    {
+      title: 'Players for ' + category,
+      data: players,
+      renderItem: ({ item }) => (
+        <View style={styles.listContainer}>
+          <View style={styles.playerContainer}>
+            <View style={styles.player}>
+              <Text style={styles.playerText}>{item.name}</Text>
+            </View>
+            {/* This button needs an onclick which removes the player from the list of players */}
+            <TouchableOpacity onPress={() => removeFromPlayList(item.id)}>
+              <Image source={TrashIcon} style={styles.trashIcon} />
+            </TouchableOpacity>
+          </View>
+        </View>
+      )
+    },
+    {
+      title: 'Saved Players',
+      data: savedPlayers,
+      renderItem:
+        ({ item }) => (
+          <View style={styles.listContainer}>
+            <TouchableOpacity onPress={() => addToPlayList(item)}>
+              <View style={styles.playerContainer}>
+                <View style={styles.player}>
+                  <Text style={styles.playerText}>{item.name}</Text>
+                </View>
+
+                <TouchableOpacity onPress={() => removePlayer(item)}>
+                  <Image source={TrashIcon} style={styles.trashIcon} />
+                </TouchableOpacity>
+              </View>
+            </TouchableOpacity>
+          </View>
+
+        )
+    }
+  ];
+
+
   return (
     <View style={[styles.bodyContainer]}>
 
@@ -173,78 +216,36 @@ export default function AddPlayersScreen({ navigation }) {
         <HeaderLogo />
       </View>
 
-      <ScrollView style={{width: "100%"}}>
-        <View style={styles.container}>
+      <View style={styles.container}>
+        <SectionList
+          sections={sections}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => item}
+          renderSectionHeader={({ section: { title } }) => (
+            <Text style={{ color: "white" }}>{title}</Text>
+          )}
+        />
+      </View>
 
-        
+      <View style={styles.addAnotherPlayer}>
 
-          <View style={styles.listContainer}>
-            <Text style={{ color: "white" }}>Players for {category}</Text>
-            <FlatList
-              data={players}
-              renderItem={
-                ({ item }) =>
-                  <View style={styles.playerContainer}>
-                    <View style={styles.player}>
-                      <Text style={styles.playerText}>{item.name}</Text>
-                    </View>
-                    {/* This button needs an onclick which removes the player from the list of players */}
-                    <TouchableOpacity onPress={() => removeFromPlayList(item.id)}>
-                      <Image source={TrashIcon} style={styles.trashIcon} />
-                    </TouchableOpacity>
-                  </View>
-              }
-              keyExtractor={(item, index) => index.toString()} />
-          </View>
-          
+        {isVisible && (
+          <TextInput
+            placeholder="Enter a name"
+            value={name}
+            style={styles.playerContainer}
+            placeholderTextColor="white"
+            ref={textInputRef}
+            onChangeText={(text) => setName(text)}
+            onSubmitEditing={addNewPlayer} />
+        )}
 
-          {/* We need to remove the player from saved players when that player exists in the player list */}
-          <View style={styles.listContainer}>
-            <Text style={{ color: "white" }}>Saved Players</Text>
-            <FlatList
-              data={savedPlayers}
-              renderItem={
-                ({ item }) =>
-                  <TouchableOpacity onPress={() => addToPlayList(item)}>
-                    <View style={styles.playerContainer}>
-                      <View style={styles.player}>
-                        
-                        <Text style={styles.playerText}>{item.name}</Text>
-
-                      </View>
-                      
-                      <TouchableOpacity onPress={() => removePlayer(item)}>
-                        <Image source={TrashIcon} style={styles.trashIcon} />
-                      </TouchableOpacity>
-                    </View>
-                  </TouchableOpacity>
-              }
-              keyExtractor={(item, index) => index.toString()} />
-          </View>
-
-          <View style={styles.addAnotherPlayer}>
-
-            {isVisible && (
-            <TextInput
-              placeholder="Enter a name"
-              value={name}
-              style={styles.playerContainer}
-              placeholderTextColor="white"
-              ref={textInputRef}
-              onChangeText={(text) => setName(text)}
-              onSubmitEditing={addNewPlayer} />
-            )}
-
-            {!isVisible && (
-              <TouchableOpacity style={styles.primaryButton} onPress={handleButtonPress}>
-                <Text style={styles.primaryButtonText}>Save a new player</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-
-
-        </View>
-      </ScrollView>
+        {!isVisible && (
+          <TouchableOpacity style={styles.primaryButton} onPress={handleButtonPress}>
+            <Text style={styles.primaryButtonText}>Save a new player</Text>
+          </TouchableOpacity>
+        )}
+      </View>
 
       <View>
         <TouchableOpacity style={styles.primaryButton} onPress={() => handleGameStart('Game')} >
